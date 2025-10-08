@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +25,12 @@ const HouseCard = ({
   phone,
   image,
 }: HouseCardProps) => {
+  const navigate = useNavigate();
+
+  const handleViewDetails = () => {
+    navigate("/house-detail", { state: { name, price, location, type, hasWater, hasWifi, phone, image } });
+  };
+
   return (
     <Card className="group overflow-hidden transition-all duration-300 hover:shadow-card-hover">
       <div className="aspect-[4/3] overflow-hidden bg-muted">
@@ -66,10 +73,9 @@ const HouseCard = ({
         </div>
       </CardContent>
       <CardFooter className="p-5 pt-0 gap-2">
-        <Button variant="outline" className="flex-1">
+        <Button variant="outline" className="flex-1" onClick={handleViewDetails}>
           View Details
         </Button>
-        <Button className="flex-1">Book Now</Button>
       </CardFooter>
     </Card>
   );
