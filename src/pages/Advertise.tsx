@@ -5,23 +5,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 
 const Advertise = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     role: "",
   });
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Basic validation
     if (!formData.name || !formData.email || !formData.password || !formData.role) {
       toast({
         title: "Error",
@@ -31,7 +31,6 @@ const Advertise = () => {
       return;
     }
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       toast({
@@ -42,7 +41,6 @@ const Advertise = () => {
       return;
     }
 
-    // Password validation
     if (formData.password.length < 6) {
       toast({
         title: "Error",
@@ -52,15 +50,42 @@ const Advertise = () => {
       return;
     }
 
-    toast({
-      title: "Success",
-      description: "Registration successful! You can now advertise your properties or products.",
-    });
+    setLoading(true);
 
-    // Navigate to home after successful registration
-    setTimeout(() => {
-      navigate("/");
-    }, 1500);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.name,
+            role: formData.role
+          },
+          emailRedirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Registration successful! You can now advertise your properties or products.",
+      });
+
+      if (formData.role === "seller") {
+        navigate("/seller-dashboard");
+      } else {
+        navigate("/");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,8 +182,8 @@ const Advertise = () => {
               </Select>
             </div>
 
-            <Button type="submit" className="w-full">
-              Register
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Registering..." : "Register"}
             </Button>
           </form>
 

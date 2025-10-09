@@ -1,56 +1,85 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [formData, setFormData] = useState({
     email: "",
-    password: "",
+    password: ""
   });
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  const checkUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .single();
+      
+      if (roles?.role === "seller") {
+        navigate("/seller-dashboard");
+      } else {
+        navigate("/");
+      }
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password
+      });
 
-    // Basic validation
-    if (!formData.email || !formData.password) {
+      if (error) throw error;
+
+      if (data.user) {
+        const { data: roles } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", data.user.id)
+          .single();
+
+        toast({
+          title: "Success",
+          description: "Logged in successfully!"
+        });
+
+        if (roles?.role === "seller") {
+          navigate("/seller-dashboard");
+        } else {
+          navigate("/");
+        }
+      }
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Please fill in all fields",
-        variant: "destructive",
+        description: error.message,
+        variant: "destructive"
       });
-      return;
+    } finally {
+      setLoading(false);
     }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast({
-        title: "Error",
-        description: "Please enter a valid email address",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Simulate login success
-    toast({
-      title: "Success",
-      description: "Login successful!",
-    });
-
-    // Navigate to home after successful login
-    setTimeout(() => navigate("/"), 1000);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value
     });
   };
 
@@ -91,19 +120,19 @@ const Login = () => {
             />
           </div>
 
-          <Button type="submit" className="w-full">
-            Login
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </Button>
         </form>
 
         <p className="text-center text-muted-foreground">
           Don't have an account?{" "}
-          <a
-            href="/advertise"
+          <Link
+            to="/advertise"
             className="text-primary hover:underline font-medium"
           >
             Register
-          </a>
+          </Link>
         </p>
       </div>
     </div>

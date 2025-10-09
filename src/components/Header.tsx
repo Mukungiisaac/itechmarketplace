@@ -1,8 +1,29 @@
 import { Link } from "react-router-dom";
-import { Home, Package, Building2, Megaphone, LogIn } from "lucide-react";
+import { Home, Package, Building2, Megaphone, LogIn, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Header = () => {
+  const [isSeller, setIsSeller] = useState(false);
+
+  useEffect(() => {
+    checkUserRole();
+  }, []);
+
+  const checkUserRole = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .single();
+      
+      setIsSeller(roles?.role === "seller");
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
@@ -38,6 +59,14 @@ const Header = () => {
               Advertise
             </Link>
           </Button>
+          {isSeller && (
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/seller-dashboard" className="gap-2">
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Link>
+            </Button>
+          )}
         </nav>
 
         <Button size="sm" asChild className="gap-2">

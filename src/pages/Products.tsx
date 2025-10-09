@@ -1,28 +1,56 @@
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import FilterSidebar from "@/components/FilterSidebar";
 import ProductCard from "@/components/ProductCard";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+
+interface Product {
+  id: string;
+  title: string;
+  description: string | null;
+  price: number;
+  photo_url: string | null;
+  seller_id: string;
+  profiles: {
+    full_name: string;
+  };
+}
 
 const Products = () => {
-  const products = [
-    {
-      name: "Cooker",
-      price: "KES 23000.0",
-      description: "Get a modern cooker at a comrade price",
-      seller: "Neptune",
-      phone: "+254115810222",
-      image: "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&q=80",
-    },
-    {
-      name: "Wardrobe",
-      price: "KES 3000.0",
-      description: "Good refurbished wardrobe",
-      seller: "ICT Next to CZ",
-      phone: "0781675645",
-      image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=800&q=80",
-    },
-  ];
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("products")
+        .select(`
+          *,
+          profiles (
+            full_name
+          )
+        `)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setProducts(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -49,11 +77,25 @@ const Products = () => {
                 <h2 className="text-3xl font-bold tracking-tight">Marketplace Items</h2>
                 <p className="text-muted-foreground mt-1">Discover great deals on products</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {products.map((product, index) => (
-                  <ProductCard key={index} {...product} />
-                ))}
-              </div>
+              {loading ? (
+                <p className="text-center">Loading products...</p>
+              ) : products.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {products.map((product) => (
+                    <ProductCard 
+                      key={product.id}
+                      name={product.title}
+                      price={`KES ${product.price}`}
+                      description={product.description || ""}
+                      seller={product.profiles?.full_name || "Unknown"}
+                      phone=""
+                      image={product.photo_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80"}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-muted-foreground">No products available yet.</p>
+              )}
             </section>
           </main>
         </div>
