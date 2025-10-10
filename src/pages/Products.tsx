@@ -16,6 +16,7 @@ interface Product {
   seller_id: string;
   profiles: {
     full_name: string;
+    phone_number: string | null;
   };
 }
 
@@ -34,7 +35,8 @@ const Products = () => {
         .select(`
           *,
           profiles (
-            full_name
+            full_name,
+            phone_number
           )
         `)
         .order("created_at", { ascending: false });
@@ -88,7 +90,7 @@ const Products = () => {
                       price={`KES ${product.price}`}
                       description={product.description || ""}
                       seller={product.profiles?.full_name || "Unknown"}
-                      phone=""
+                      phone={product.profiles?.phone_number || "N/A"}
                       image={product.photo_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80"}
                     />
                   ))}
