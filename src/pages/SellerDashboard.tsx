@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, User } from "lucide-react";
 
 interface Product {
   id: string;
@@ -32,10 +33,16 @@ const SellerDashboard = () => {
     price: "",
     photo_url: ""
   });
+  const [profileForm, setProfileForm] = useState({
+    full_name: "",
+    phone_number: "",
+  });
+  const [profileLoading, setProfileLoading] = useState(false);
 
   useEffect(() => {
     checkUserRole();
     fetchProducts();
+    fetchProfile();
   }, []);
 
   const checkUserRole = async () => {
@@ -62,6 +69,31 @@ const SellerDashboard = () => {
     }
   };
 
+  const fetchProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (error) throw error;
+      setProfileForm({
+        full_name: data.full_name || "",
+        phone_number: data.phone_number || "",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
   const fetchProducts = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -83,6 +115,39 @@ const SellerDashboard = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleProfileUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setProfileLoading(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          full_name: profileForm.full_name,
+          phone_number: profileForm.phone_number,
+        })
+        .eq("id", user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Profile updated successfully!",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setProfileLoading(false);
     }
   };
 
@@ -176,8 +241,58 @@ const SellerDashboard = () => {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-4">Seller Dashboard</h1>
+          <h1 className="text-3xl font-bold mb-8 text-center">Seller Dashboard</h1>
+          
+          <Tabs defaultValue="products" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsTrigger value="products">My Products</TabsTrigger>
+              <TabsTrigger value="profile">Profile Settings</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="profile">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="h-5 w-5" />
+                    Edit Profile
+                  </CardTitle>
+                  <CardDescription>
+                    Update your personal information
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleProfileUpdate} className="space-y-4">
+                    <div>
+                      <Label htmlFor="profile_name">Full Name</Label>
+                      <Input
+                        id="profile_name"
+                        value={profileForm.full_name}
+                        onChange={(e) => setProfileForm({ ...profileForm, full_name: e.target.value })}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="profile_phone">Phone Number</Label>
+                      <Input
+                        id="profile_phone"
+                        type="tel"
+                        value={profileForm.phone_number}
+                        onChange={(e) => setProfileForm({ ...profileForm, phone_number: e.target.value })}
+                        required
+                      />
+                    </div>
+
+                    <Button type="submit" disabled={profileLoading}>
+                      {profileLoading ? "Updating..." : "Update Profile"}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="products">
+              <div className="text-center mb-8">
             <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
               <DialogTrigger asChild>
                 <Button size="lg">Post New Item</Button>
@@ -281,6 +396,8 @@ const SellerDashboard = () => {
           ) : (
             <p className="text-center text-muted-foreground">You haven't posted any items yet.</p>
           )}
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
     </div>

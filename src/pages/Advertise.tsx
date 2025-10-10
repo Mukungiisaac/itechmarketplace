@@ -15,6 +15,7 @@ const Advertise = () => {
     name: "",
     email: "",
     password: "",
+    phone_number: "",
     role: "",
   });
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,7 @@ const Advertise = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.password || !formData.role) {
+    if (!formData.name || !formData.email || !formData.password || !formData.phone_number || !formData.role) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -59,6 +60,7 @@ const Advertise = () => {
         options: {
           data: {
             full_name: formData.name,
+            phone_number: formData.phone_number,
             role: formData.role
           },
           emailRedirectTo: `${window.location.origin}/`
@@ -164,6 +166,19 @@ const Advertise = () => {
                 type="password"
                 placeholder="Enter your password"
                 value={formData.password}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone_number">Phone Number</Label>
+              <Input
+                id="phone_number"
+                name="phone_number"
+                type="tel"
+                placeholder="Enter your phone number"
+                value={formData.phone_number}
                 onChange={handleInputChange}
                 required
               />
