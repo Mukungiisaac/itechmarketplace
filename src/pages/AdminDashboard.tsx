@@ -59,43 +59,49 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data: sellersData, error: sellersError } = await supabase
+      // Fetch sellers with their profiles
+      const { data: sellersRoles } = await supabase
         .from("user_roles")
-        .select(`
-          id,
-          user_id,
-          role,
-          approved,
-          approved_at,
-          profiles (
-            full_name,
-            email,
-            phone_number
-          )
-        `)
+        .select("*")
         .eq("role", "seller");
 
-      const { data: landlordsData, error: landlordsError } = await supabase
+      const { data: landlordsRoles } = await supabase
         .from("user_roles")
-        .select(`
-          id,
-          user_id,
-          role,
-          approved,
-          approved_at,
-          profiles (
-            full_name,
-            email,
-            phone_number
-          )
-        `)
+        .select("*")
         .eq("role", "landlord");
 
-      if (sellersError) throw sellersError;
-      if (landlordsError) throw landlordsError;
+      // Fetch all profiles
+      const { data: profilesData } = await supabase
+        .from("profiles")
+        .select("*");
 
-      setSellers(sellersData || []);
-      setLandlords(landlordsData || []);
+      // Combine the data
+      const sellersWithProfiles = (sellersRoles || []).map(role => {
+        const profile = profilesData?.find(p => p.id === role.user_id);
+        return {
+          ...role,
+          profiles: {
+            full_name: profile?.full_name || "",
+            email: profile?.email || "",
+            phone_number: profile?.phone_number || "",
+          }
+        };
+      });
+
+      const landlordsWithProfiles = (landlordsRoles || []).map(role => {
+        const profile = profilesData?.find(p => p.id === role.user_id);
+        return {
+          ...role,
+          profiles: {
+            full_name: profile?.full_name || "",
+            email: profile?.email || "",
+            phone_number: profile?.phone_number || "",
+          }
+        };
+      });
+
+      setSellers(sellersWithProfiles);
+      setLandlords(landlordsWithProfiles);
     } catch (error: any) {
       toast({
         title: "Error",

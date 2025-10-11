@@ -27,7 +27,9 @@ const Login = () => {
         .eq("user_id", user.id)
         .single();
       
-      if (roles?.role === "seller") {
+      if (roles?.role === "admin") {
+        navigate("/admin-dashboard");
+      } else if (roles?.role === "seller") {
         navigate("/seller-dashboard");
       } else {
         navigate("/");
@@ -59,7 +61,9 @@ const Login = () => {
           description: "Logged in successfully!"
         });
 
-        if (roles?.role === "seller") {
+        if (roles?.role === "admin") {
+          navigate("/admin-dashboard");
+        } else if (roles?.role === "seller") {
           navigate("/seller-dashboard");
         } else {
           navigate("/");
