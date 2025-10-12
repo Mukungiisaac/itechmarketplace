@@ -86,6 +86,10 @@ const Advertise = () => {
 
       if (formData.role === "seller") {
         navigate("/seller-dashboard");
+      } else if (formData.role === "landlord") {
+        navigate("/landlord-dashboard");
+      } else if (formData.role === "service_provider") {
+        navigate("/service-provider-dashboard");
       } else {
         navigate("/");
       }
@@ -201,8 +205,9 @@ const Advertise = () => {
                   <SelectValue placeholder="Select your role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="landlord">Landlord</SelectItem>
                   <SelectItem value="seller">Seller</SelectItem>
+                  <SelectItem value="landlord">Landlord</SelectItem>
+                  <SelectItem value="service_provider">Service Provider</SelectItem>
                 </SelectContent>
               </Select>
             </div>

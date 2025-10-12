@@ -33,6 +33,10 @@ const Login = () => {
         navigate("/admin-dashboard");
       } else if (roles?.role === "seller") {
         navigate("/seller-dashboard");
+      } else if (roles?.role === "landlord") {
+        navigate("/landlord-dashboard");
+      } else if (roles?.role === "service_provider") {
+        navigate("/service-provider-dashboard");
       } else {
         navigate("/");
       }
@@ -88,6 +92,10 @@ const Login = () => {
           navigate("/admin-dashboard");
         } else if (roles.role === "seller") {
           navigate("/seller-dashboard");
+        } else if (roles.role === "landlord") {
+          navigate("/landlord-dashboard");
+        } else if (roles.role === "service_provider") {
+          navigate("/service-provider-dashboard");
         } else {
           navigate("/");
         }

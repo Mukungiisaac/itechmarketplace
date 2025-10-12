@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      houses: {
+        Row: {
+          contact_number: string
+          created_at: string
+          deposit: number
+          distance: number
+          house_type: string
+          id: string
+          landlord_id: string
+          location: string
+          photo_url: string | null
+          rent: number
+          title: string
+          updated_at: string
+          water: string
+          wifi: string
+        }
+        Insert: {
+          contact_number: string
+          created_at?: string
+          deposit: number
+          distance: number
+          house_type: string
+          id?: string
+          landlord_id: string
+          location: string
+          photo_url?: string | null
+          rent: number
+          title: string
+          updated_at?: string
+          water: string
+          wifi: string
+        }
+        Update: {
+          contact_number?: string
+          created_at?: string
+          deposit?: number
+          distance?: number
+          house_type?: string
+          id?: string
+          landlord_id?: string
+          location?: string
+          photo_url?: string | null
+          rent?: number
+          title?: string
+          updated_at?: string
+          water?: string
+          wifi?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           created_at: string
@@ -82,6 +133,48 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          availability: string
+          category: string
+          contact_number: string
+          created_at: string
+          description: string | null
+          id: string
+          photo_url: string | null
+          price: number
+          provider_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          availability: string
+          category: string
+          contact_number: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          photo_url?: string | null
+          price: number
+          provider_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          availability?: string
+          category?: string
+          contact_number?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          photo_url?: string | null
+          price?: number
+          provider_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           approved: boolean | null
@@ -130,7 +223,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "landlord" | "seller" | "admin"
+      app_role: "landlord" | "seller" | "admin" | "service_provider"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -258,7 +351,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["landlord", "seller", "admin"],
+      app_role: ["landlord", "seller", "admin", "service_provider"],
     },
   },
 } as const

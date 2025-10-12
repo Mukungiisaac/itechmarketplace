@@ -11,6 +11,8 @@ import ProductDetail from "./pages/ProductDetail";
 import Advertise from "./pages/Advertise";
 import Login from "./pages/Login";
 import SellerDashboard from "./pages/SellerDashboard";
+import LandlordDashboard from "./pages/LandlordDashboard";
+import ServiceProviderDashboard from "./pages/ServiceProviderDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +33,8 @@ const App = () => (
           <Route path="/advertise" element={<Advertise />} />
           <Route path="/login" element={<Login />} />
           <Route path="/seller-dashboard" element={<SellerDashboard />} />
+          <Route path="/landlord-dashboard" element={<LandlordDashboard />} />
+          <Route path="/service-provider-dashboard" element={<ServiceProviderDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
