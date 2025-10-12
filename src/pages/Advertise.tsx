@@ -67,7 +67,17 @@ const Advertise = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes("already registered") || error.message.includes("already exists")) {
+          toast({
+            title: "Email Already Exists",
+            description: "This email is already registered. Please login instead.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw error;
+      }
 
       toast({
         title: "Success",
