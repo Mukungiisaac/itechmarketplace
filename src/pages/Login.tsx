@@ -52,20 +52,41 @@ const Login = () => {
       if (error) throw error;
 
       if (data.user) {
-        const { data: roles } = await supabase
+        const { data: roles, error: roleError } = await supabase
           .from("user_roles")
           .select("role")
           .eq("user_id", data.user.id)
           .single();
+
+        if (roleError) {
+          console.error("Role fetch error:", roleError);
+          toast({
+            title: "Error",
+            description: "Could not fetch user role. Please contact support.",
+            variant: "destructive"
+          });
+          await supabase.auth.signOut();
+          return;
+        }
+
+        if (!roles) {
+          toast({
+            title: "Error",
+            description: "No role assigned to this account. Please contact support.",
+            variant: "destructive"
+          });
+          await supabase.auth.signOut();
+          return;
+        }
 
         toast({
           title: "Success",
           description: "Logged in successfully!"
         });
 
-        if (roles?.role === "admin") {
+        if (roles.role === "admin") {
           navigate("/admin-dashboard");
-        } else if (roles?.role === "seller") {
+        } else if (roles.role === "seller") {
           navigate("/seller-dashboard");
         } else {
           navigate("/");
