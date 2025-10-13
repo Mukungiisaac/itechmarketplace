@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Trash2 } from "lucide-react";
+import { Trash2, Upload } from "lucide-react";
 
 const LandlordDashboard = () => {
   const navigate = useNavigate();
@@ -296,6 +296,37 @@ const LandlordDashboard = () => {
                     onChange={(e) => setFormData({ ...formData, photo_url: e.target.value })}
                     placeholder="https://example.com/photo.jpg"
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="photo_file">Or Upload Photo</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="photo_file"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setFormData({ ...formData, photo_url: reader.result as string });
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => document.getElementById('photo_file')?.click()}
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Choose File
+                    </Button>
+                  </div>
                 </div>
 
                 <Button type="submit" className="w-full" disabled={loading}>

@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
-import { Pencil, Trash2, User, LogOut } from "lucide-react";
+import { Pencil, Trash2, User, LogOut, Upload } from "lucide-react";
 
 interface Product {
   id: string;
@@ -363,7 +363,38 @@ const SellerDashboard = () => {
                       type="url"
                       value={formData.photo_url}
                       onChange={(e) => setFormData({ ...formData, photo_url: e.target.value })}
+                      placeholder="https://example.com/image.jpg"
                     />
+                  </div>
+                  <div>
+                    <Label htmlFor="photo_file">Or Upload Photo</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id="photo_file"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setFormData({ ...formData, photo_url: reader.result as string });
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => document.getElementById('photo_file')?.click()}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Choose File
+                      </Button>
+                    </div>
                   </div>
                   <Button type="submit" className="w-full">
                     {editingProduct ? "Update Product" : "Post Product"}
