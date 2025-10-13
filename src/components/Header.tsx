@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Home, Package, Building2, Megaphone, LogIn, LayoutDashboard } from "lucide-react";
+import { Home, Package, Building2, Megaphone, LogIn, LayoutDashboard, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -51,6 +51,12 @@ const Header = () => {
             <Link to="/houses" className="gap-2">
               <Building2 className="h-4 w-4" />
               Houses
+            </Link>
+          </Button>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/services" className="gap-2">
+              <Wrench className="h-4 w-4" />
+              Services
             </Link>
           </Button>
           <Button variant="ghost" size="sm" asChild>

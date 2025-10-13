@@ -26,6 +26,7 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [sellers, setSellers] = useState<UserRole[]>([]);
   const [landlords, setLandlords] = useState<UserRole[]>([]);
+  const [serviceProviders, setServiceProviders] = useState<UserRole[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -70,6 +71,11 @@ const AdminDashboard = () => {
         .select("*")
         .eq("role", "landlord");
 
+      const { data: serviceProvidersRoles } = await supabase
+        .from("user_roles")
+        .select("*")
+        .eq("role", "service_provider");
+
       // Fetch all profiles
       const { data: profilesData } = await supabase
         .from("profiles")
@@ -100,8 +106,21 @@ const AdminDashboard = () => {
         };
       });
 
+      const serviceProvidersWithProfiles = (serviceProvidersRoles || []).map(role => {
+        const profile = profilesData?.find(p => p.id === role.user_id);
+        return {
+          ...role,
+          profiles: {
+            full_name: profile?.full_name || "",
+            email: profile?.email || "",
+            phone_number: profile?.phone_number || "",
+          }
+        };
+      });
+
       setSellers(sellersWithProfiles);
       setLandlords(landlordsWithProfiles);
+      setServiceProviders(serviceProvidersWithProfiles);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -322,9 +341,10 @@ const AdminDashboard = () => {
           </div>
 
           <Tabs defaultValue="sellers" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsList className="grid w-full grid-cols-3 mb-8">
               <TabsTrigger value="sellers">Sellers</TabsTrigger>
               <TabsTrigger value="landlords">Landlords</TabsTrigger>
+              <TabsTrigger value="service-providers">Service Providers</TabsTrigger>
             </TabsList>
 
             <TabsContent value="sellers">
@@ -333,6 +353,10 @@ const AdminDashboard = () => {
 
             <TabsContent value="landlords">
               {renderUserTable(landlords, "Landlords")}
+            </TabsContent>
+
+            <TabsContent value="service-providers">
+              {renderUserTable(serviceProviders, "Service Providers")}
             </TabsContent>
           </Tabs>
         </div>
