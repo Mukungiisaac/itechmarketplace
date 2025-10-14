@@ -130,7 +130,7 @@ const Index = () => {
       product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.seller.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesMinPrice && matchesMaxPrice && matchesSearch;
-  });
+  }).slice(0, 4);
 
   const filteredServices = services.filter((service) => {
     const price = extractPrice(service.price);
@@ -141,7 +141,7 @@ const Index = () => {
       service.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       service.category.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesMinPrice && matchesMaxPrice && matchesSearch;
-  });
+  }).slice(0, 2);
 
   const filteredHouses = houses.filter((house) => {
     const price = extractPrice(house.price);
@@ -152,7 +152,7 @@ const Index = () => {
       house.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
       house.type.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesMinPrice && matchesMaxPrice && matchesSearch;
-  });
+  }).slice(0, 2);
 
   return (
     <div className="min-h-screen bg-background">
