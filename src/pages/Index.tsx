@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FilterSidebar from "@/components/FilterSidebar";
 import ProductCard from "@/components/ProductCard";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,25 +15,48 @@ const Index = () => {
     minPrice: null as number | null,
     maxPrice: null as number | null,
   });
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const products = [
-    {
-      name: "Cooker",
-      price: "KES 23000.0",
-      description: "Get a modern cooker at a comrade price",
-      seller: "Neptune",
-      phone: "+254115810222",
-      image: "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&q=80",
-    },
-    {
-      name: "Wardrobe",
-      price: "KES 3000.0",
-      description: "Good refurbished wardrobe",
-      seller: "ICT Next to CZ",
-      phone: "0781675645",
-      image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=800&q=80",
-    },
-  ];
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("products")
+        .select(`
+          *,
+          profiles:seller_id (
+            full_name,
+            phone_number
+          )
+        `);
+
+      if (error) throw error;
+
+      const formattedProducts = data?.map((product) => ({
+        name: product.title,
+        price: `KES ${product.price}`,
+        description: product.description || "",
+        seller: product.profiles?.full_name || "Unknown Seller",
+        phone: product.profiles?.phone_number || "",
+        image: product.photo_url || "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&q=80",
+      })) || [];
+
+      setProducts(formattedProducts);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load products",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const extractPrice = (priceStr: string) => {
     return parseFloat(priceStr.replace(/[^0-9.]/g, ""));
@@ -79,11 +104,21 @@ const Index = () => {
                 <h2 className="text-3xl font-bold tracking-tight">Marketplace Items</h2>
                 <p className="text-muted-foreground mt-1">Discover great deals on products</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredProducts.map((product, index) => (
-                  <ProductCard key={index} {...product} />
-                ))}
-              </div>
+              {loading ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">Loading products...</p>
+                </div>
+              ) : filteredProducts.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">No products found</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {filteredProducts.map((product, index) => (
+                    <ProductCard key={index} {...product} />
+                  ))}
+                </div>
+              )}
             </section>
           </main>
         </div>
