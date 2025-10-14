@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import logoImage from "@/assets/iTech-logo.png";
 
 const Header = () => {
   const [isSeller, setIsSeller] = useState(false);
@@ -33,11 +34,9 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
-        <Link to="/" className="flex items-center gap-2 font-bold text-xl text-primary">
-          <div className="bg-gradient-primary rounded-lg p-1.5">
-            <Building2 className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="bg-gradient-primary bg-clip-text text-transparent">Marketplace</span>
+        <Link to="/" className="flex items-center gap-2 font-bold text-xl">
+          <img src={logoImage} alt="iTech Studio" className="h-10 w-10 object-contain" />
+          <span className="bg-gradient-primary bg-clip-text text-transparent">iTechMarketplace</span>
         </Link>
         
         {/* Desktop Navigation */}
