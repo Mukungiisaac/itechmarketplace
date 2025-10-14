@@ -7,13 +7,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Trash2, Upload } from "lucide-react";
+import { Trash2, Upload, Edit } from "lucide-react";
 
 const LandlordDashboard = () => {
   const navigate = useNavigate();
   const [houses, setHouses] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [approved, setApproved] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     location: "",
@@ -82,47 +83,125 @@ const LandlordDashboard = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { error } = await supabase.from("houses").insert({
-      landlord_id: user.id,
-      title: formData.title,
-      location: formData.location,
-      distance: parseFloat(formData.distance),
-      rent: parseFloat(formData.rent),
-      deposit: parseFloat(formData.deposit),
-      house_type: formData.house_type,
-      water: formData.water,
-      wifi: formData.wifi,
-      contact_number: formData.contact_number,
-      photo_url: formData.photo_url
-    });
+    if (editingId) {
+      const { error } = await supabase
+        .from("houses")
+        .update({
+          title: formData.title,
+          location: formData.location,
+          distance: parseFloat(formData.distance),
+          rent: parseFloat(formData.rent),
+          deposit: parseFloat(formData.deposit),
+          house_type: formData.house_type,
+          water: formData.water,
+          wifi: formData.wifi,
+          contact_number: formData.contact_number,
+          photo_url: formData.photo_url
+        })
+        .eq("id", editingId);
 
-    if (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "House updated successfully!"
+        });
+        setEditingId(null);
+        setFormData({
+          title: "",
+          location: "",
+          distance: "",
+          rent: "",
+          deposit: "",
+          house_type: "",
+          water: "",
+          wifi: "",
+          contact_number: "",
+          photo_url: ""
+        });
+        fetchHouses();
+      }
     } else {
-      toast({
-        title: "Success",
-        description: "House posted successfully!"
+      const { error } = await supabase.from("houses").insert({
+        landlord_id: user.id,
+        title: formData.title,
+        location: formData.location,
+        distance: parseFloat(formData.distance),
+        rent: parseFloat(formData.rent),
+        deposit: parseFloat(formData.deposit),
+        house_type: formData.house_type,
+        water: formData.water,
+        wifi: formData.wifi,
+        contact_number: formData.contact_number,
+        photo_url: formData.photo_url
       });
-      setFormData({
-        title: "",
-        location: "",
-        distance: "",
-        rent: "",
-        deposit: "",
-        house_type: "",
-        water: "",
-        wifi: "",
-        contact_number: "",
-        photo_url: ""
-      });
-      fetchHouses();
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "House posted successfully!"
+        });
+        setFormData({
+          title: "",
+          location: "",
+          distance: "",
+          rent: "",
+          deposit: "",
+          house_type: "",
+          water: "",
+          wifi: "",
+          contact_number: "",
+          photo_url: ""
+        });
+        fetchHouses();
+      }
     }
 
     setLoading(false);
+  };
+
+  const handleEdit = (house: any) => {
+    setEditingId(house.id);
+    setFormData({
+      title: house.title,
+      location: house.location,
+      distance: house.distance.toString(),
+      rent: house.rent.toString(),
+      deposit: house.deposit.toString(),
+      house_type: house.house_type,
+      water: house.water,
+      wifi: house.wifi,
+      contact_number: house.contact_number,
+      photo_url: house.photo_url || ""
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setFormData({
+      title: "",
+      location: "",
+      distance: "",
+      rent: "",
+      deposit: "",
+      house_type: "",
+      water: "",
+      wifi: "",
+      contact_number: "",
+      photo_url: ""
+    });
   };
 
   const handleDelete = async (id: string) => {
@@ -169,7 +248,7 @@ const LandlordDashboard = () => {
         {approved && (
           <Card>
             <CardHeader>
-              <CardTitle>Post a House</CardTitle>
+              <CardTitle>{editingId ? "Edit House" : "Post a House"}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -329,9 +408,16 @@ const LandlordDashboard = () => {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Posting..." : "Post House"}
-                </Button>
+                <div className="flex gap-2">
+                  <Button type="submit" className="flex-1" disabled={loading}>
+                    {loading ? (editingId ? "Updating..." : "Posting...") : (editingId ? "Update House" : "Post House")}
+                  </Button>
+                  {editingId && (
+                    <Button type="button" variant="outline" onClick={handleCancelEdit}>
+                      Cancel
+                    </Button>
+                  )}
+                </div>
               </form>
             </CardContent>
           </Card>
@@ -360,15 +446,26 @@ const LandlordDashboard = () => {
                       <p className="text-sm text-muted-foreground mb-1">{house.location}</p>
                       <p className="text-sm mb-1">Type: {house.house_type}</p>
                       <p className="text-lg font-bold mb-2">KES {house.rent}/month</p>
-                      <Button
-                        onClick={() => handleDelete(house.id)}
-                        variant="destructive"
-                        size="sm"
-                        className="w-full"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => handleEdit(house)}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                        >
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          onClick={() => handleDelete(house.id)}
+                          variant="destructive"
+                          size="sm"
+                          className="flex-1"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
