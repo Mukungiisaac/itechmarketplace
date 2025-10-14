@@ -1,11 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Header from "@/components/Header";
 import FilterSidebar from "@/components/FilterSidebar";
 import HouseCard from "@/components/HouseCard";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+
+interface House {
+  id: string;
+  title: string;
+  location: string;
+  house_type: string;
+  rent: number;
+  deposit: number;
+  distance: number;
+  water: string;
+  wifi: string;
+  contact_number: string;
+  photo_url: string | null;
+  landlord_id: string;
+}
 
 const Houses = () => {
+  const [houses, setHouses] = useState<House[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     category: "all",
@@ -13,71 +32,37 @@ const Houses = () => {
     maxPrice: null as number | null,
   });
 
-  const houses = [
-    {
-      name: "Somoni",
-      price: "KSh 3500.0",
-      location: "Kisumu Ndogo",
-      type: "bedsitter",
-      hasWater: true,
-      hasWifi: true,
-      phone: "254115810222",
-      image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
-    },
-    {
-      name: "Mirema",
-      price: "KSh 4500.0",
-      location: "Kasarani",
-      type: "one-bedroom",
-      hasWater: true,
-      hasWifi: true,
-      phone: "254115810333",
-      image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80",
-    },
-    {
-      name: "Inaka",
-      price: "KSh 3600.0",
-      location: "Kisumu Ndogo",
-      type: "bedsitter",
-      hasWater: true,
-      hasWifi: true,
-      phone: "0789523345",
-      image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80",
-    },
-    {
-      name: "Lena D",
-      price: "KSh 12000.0",
-      location: "Behind Vichmas Hostel",
-      type: "bedsitter",
-      hasWater: true,
-      hasWifi: true,
-      phone: "0790897856",
-      image: "https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=800&q=80",
-    },
-    {
-      name: "Dally",
-      price: "KSh 4500.0",
-      location: "Past Somoni",
-      type: "bedsitter",
-      hasWater: true,
-      hasWifi: true,
-      phone: "0789786756",
-      image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80",
-    },
-  ];
+  useEffect(() => {
+    fetchHouses();
+  }, []);
 
-  const extractPrice = (priceStr: string) => {
-    return parseFloat(priceStr.replace(/[^0-9.]/g, ""));
+  const fetchHouses = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("houses")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setHouses(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filteredHouses = houses.filter((house) => {
-    const price = extractPrice(house.price);
-    const matchesMinPrice = filters.minPrice === null || price >= filters.minPrice;
-    const matchesMaxPrice = filters.maxPrice === null || price <= filters.maxPrice;
+    const matchesMinPrice = filters.minPrice === null || house.rent >= filters.minPrice;
+    const matchesMaxPrice = filters.maxPrice === null || house.rent <= filters.maxPrice;
     const matchesSearch = searchTerm === "" || 
-      house.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      house.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       house.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      house.type.toLowerCase().includes(searchTerm.toLowerCase());
+      house.house_type.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesMinPrice && matchesMaxPrice && matchesSearch;
   });
 
@@ -108,11 +93,27 @@ const Houses = () => {
                 <h2 className="text-3xl font-bold tracking-tight">Available Houses</h2>
                 <p className="text-muted-foreground mt-1">Browse our collection of quality homes</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredHouses.map((house, index) => (
-                  <HouseCard key={index} {...house} />
-                ))}
-              </div>
+              {loading ? (
+                <p className="text-center">Loading houses...</p>
+              ) : filteredHouses.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {filteredHouses.map((house) => (
+                    <HouseCard 
+                      key={house.id}
+                      name={house.title}
+                      price={`KSh ${house.rent}`}
+                      location={house.location}
+                      type={house.house_type}
+                      hasWater={house.water === "yes"}
+                      hasWifi={house.wifi === "yes"}
+                      phone={house.contact_number}
+                      image={house.photo_url || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80"}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-muted-foreground">No houses available yet.</p>
+              )}
             </section>
           </main>
         </div>
