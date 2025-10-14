@@ -38,6 +38,7 @@ const SellerDashboard = () => {
     phone_number: "",
   });
   const [profileLoading, setProfileLoading] = useState(false);
+  const [isApproved, setIsApproved] = useState(false);
 
   useEffect(() => {
     checkUserRole();
@@ -55,7 +56,7 @@ const SellerDashboard = () => {
 
     const { data: roles } = await supabase
       .from("user_roles")
-      .select("role")
+      .select("role, approved")
       .eq("user_id", user.id)
       .single();
 
@@ -67,6 +68,8 @@ const SellerDashboard = () => {
       });
       navigate("/");
     }
+    
+    setIsApproved(roles?.approved || false);
   };
 
   const fetchProfile = async () => {
@@ -153,6 +156,15 @@ const SellerDashboard = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isApproved) {
+      toast({
+        title: "Cannot Post",
+        description: "Can't post. Wait for admin approval.",
+        variant: "destructive"
+      });
+      return;
+    }
     
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -315,6 +327,13 @@ const SellerDashboard = () => {
             </TabsContent>
 
             <TabsContent value="products">
+              {!isApproved && (
+                <div className="mb-6 p-4 bg-destructive/10 border border-destructive rounded-lg">
+                  <p className="text-destructive text-center font-semibold">
+                    Can't post. Wait for admin approval.
+                  </p>
+                </div>
+              )}
               <div className="text-center mb-8">
             <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
               <DialogTrigger asChild>
