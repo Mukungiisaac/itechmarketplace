@@ -8,13 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Trash2, Upload } from "lucide-react";
+import { Trash2, Upload, Edit } from "lucide-react";
 
 const ServiceProviderDashboard = () => {
   const navigate = useNavigate();
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [approved, setApproved] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -80,16 +81,36 @@ const ServiceProviderDashboard = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { error } = await supabase.from("services").insert({
-      provider_id: user.id,
-      title: formData.title,
-      category: formData.category,
-      description: formData.description,
-      price: parseFloat(formData.price),
-      contact_number: formData.contact_number,
-      availability: formData.availability,
-      photo_url: formData.photo_url
-    });
+    let error;
+    if (editingId) {
+      // Update existing service
+      const result = await supabase
+        .from("services")
+        .update({
+          title: formData.title,
+          category: formData.category,
+          description: formData.description,
+          price: parseFloat(formData.price),
+          contact_number: formData.contact_number,
+          availability: formData.availability,
+          photo_url: formData.photo_url
+        })
+        .eq("id", editingId);
+      error = result.error;
+    } else {
+      // Insert new service
+      const result = await supabase.from("services").insert({
+        provider_id: user.id,
+        title: formData.title,
+        category: formData.category,
+        description: formData.description,
+        price: parseFloat(formData.price),
+        contact_number: formData.contact_number,
+        availability: formData.availability,
+        photo_url: formData.photo_url
+      });
+      error = result.error;
+    }
 
     if (error) {
       toast({
@@ -100,7 +121,7 @@ const ServiceProviderDashboard = () => {
     } else {
       toast({
         title: "Success",
-        description: "Service posted successfully!"
+        description: editingId ? "Service updated successfully!" : "Service posted successfully!"
       });
       setFormData({
         title: "",
@@ -111,10 +132,38 @@ const ServiceProviderDashboard = () => {
         availability: "",
         photo_url: ""
       });
+      setEditingId(null);
       fetchServices();
     }
 
     setLoading(false);
+  };
+
+  const handleEdit = (service: any) => {
+    setEditingId(service.id);
+    setFormData({
+      title: service.title,
+      category: service.category,
+      description: service.description || "",
+      price: service.price.toString(),
+      contact_number: service.contact_number,
+      availability: service.availability,
+      photo_url: service.photo_url || ""
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setFormData({
+      title: "",
+      category: "",
+      description: "",
+      price: "",
+      contact_number: "",
+      availability: "",
+      photo_url: ""
+    });
   };
 
   const handleDelete = async (id: string) => {
@@ -161,7 +210,7 @@ const ServiceProviderDashboard = () => {
         {approved && (
           <Card>
             <CardHeader>
-              <CardTitle>Post a Service</CardTitle>
+              <CardTitle>{editingId ? "Edit Service" : "Post a Service"}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -293,9 +342,16 @@ const ServiceProviderDashboard = () => {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Posting..." : "Post Service"}
-                </Button>
+                <div className="flex gap-2">
+                  <Button type="submit" className="flex-1" disabled={loading}>
+                    {loading ? (editingId ? "Updating..." : "Posting...") : (editingId ? "Update Service" : "Post Service")}
+                  </Button>
+                  {editingId && (
+                    <Button type="button" variant="outline" onClick={handleCancelEdit}>
+                      Cancel
+                    </Button>
+                  )}
+                </div>
               </form>
             </CardContent>
           </Card>
@@ -325,15 +381,26 @@ const ServiceProviderDashboard = () => {
                       <p className="text-sm mb-2">{service.description}</p>
                       <p className="text-lg font-bold mb-2">KES {service.price}</p>
                       <p className="text-sm mb-3">Available: {service.availability}</p>
-                      <Button
-                        onClick={() => handleDelete(service.id)}
-                        variant="destructive"
-                        size="sm"
-                        className="w-full"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => handleEdit(service)}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                        >
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          onClick={() => handleDelete(service.id)}
+                          variant="destructive"
+                          size="sm"
+                          className="flex-1"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
