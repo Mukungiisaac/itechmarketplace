@@ -334,11 +334,12 @@ const SellerDashboard = () => {
                   </p>
                 </div>
               )}
-              <div className="text-center mb-8">
-            <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
-              <DialogTrigger asChild>
-                <Button size="lg">Post New Item</Button>
-              </DialogTrigger>
+              {isApproved && (
+                <div className="text-center mb-8">
+                  <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
+                    <DialogTrigger asChild>
+                      <Button size="lg">Post New Item</Button>
+                    </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>{editingProduct ? "Edit Product" : "Post New Product"}</DialogTitle>
@@ -419,9 +420,10 @@ const SellerDashboard = () => {
                     {editingProduct ? "Update Product" : "Post Product"}
                   </Button>
                 </form>
-              </DialogContent>
-            </Dialog>
-          </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              )}
 
           <h3 className="text-2xl font-semibold mb-6 text-center">Your Posted Items</h3>
           
