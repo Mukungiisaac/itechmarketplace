@@ -11,9 +11,26 @@ import {
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 
-const FilterSidebar = () => {
+interface FilterSidebarProps {
+  onFilterChange?: (filters: {
+    category: string;
+    minPrice: number | null;
+    maxPrice: number | null;
+  }) => void;
+}
+
+const FilterSidebar = ({ onFilterChange }: FilterSidebarProps) => {
+  const [category, setCategory] = useState("all");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+
+  const handleApplyFilters = () => {
+    onFilterChange?.({
+      category,
+      minPrice: minPrice ? parseFloat(minPrice) : null,
+      maxPrice: maxPrice ? parseFloat(maxPrice) : null,
+    });
+  };
 
   return (
     <Card className="p-6 h-fit sticky top-20">
@@ -22,15 +39,15 @@ const FilterSidebar = () => {
           <Label htmlFor="category" className="text-base font-semibold">
             Category
           </Label>
-          <Select defaultValue="all">
+          <Select value={category} onValueChange={setCategory}>
             <SelectTrigger id="category">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
               <SelectItem value="houses">Houses</SelectItem>
-              <SelectItem value="apartments">Apartments</SelectItem>
               <SelectItem value="products">Products</SelectItem>
+              <SelectItem value="services">Services</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -53,7 +70,7 @@ const FilterSidebar = () => {
           </div>
         </div>
 
-        <Button className="w-full" size="lg">
+        <Button className="w-full" size="lg" onClick={handleApplyFilters}>
           Apply Filters
         </Button>
       </div>

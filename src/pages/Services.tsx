@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Header from "@/components/Header";
@@ -7,6 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 const Services = () => {
+  const [filters, setFilters] = useState({
+    category: "all",
+    minPrice: null as number | null,
+    maxPrice: null as number | null,
+  });
+
   const services = [
     {
       title: "Professional Cleaning",
@@ -19,6 +26,17 @@ const Services = () => {
     },
   ];
 
+  const extractPrice = (priceStr: string) => {
+    return parseFloat(priceStr.replace(/[^0-9.]/g, ""));
+  };
+
+  const filteredServices = services.filter((service) => {
+    const price = extractPrice(service.price);
+    const matchesMinPrice = filters.minPrice === null || price >= filters.minPrice;
+    const matchesMaxPrice = filters.maxPrice === null || price <= filters.maxPrice;
+    return matchesMinPrice && matchesMaxPrice;
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -26,7 +44,7 @@ const Services = () => {
       <div className="container px-4 md:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
           <aside className="hidden lg:block">
-            <FilterSidebar />
+            <FilterSidebar onFilterChange={setFilters} />
           </aside>
 
           <main className="space-y-12">
@@ -45,7 +63,7 @@ const Services = () => {
                 <p className="text-muted-foreground mt-1">Find trusted service providers near campus</p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {services.map((service, index) => (
+                {filteredServices.map((service, index) => (
                   <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
                     <div className="aspect-video relative overflow-hidden bg-muted">
                       <img

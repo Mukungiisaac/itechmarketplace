@@ -23,6 +23,11 @@ interface Product {
 const Products = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({
+    category: "all",
+    minPrice: null as number | null,
+    maxPrice: null as number | null,
+  });
 
   useEffect(() => {
     fetchProducts();
@@ -54,6 +59,12 @@ const Products = () => {
     }
   };
 
+  const filteredProducts = products.filter((product) => {
+    const matchesMinPrice = filters.minPrice === null || product.price >= filters.minPrice;
+    const matchesMaxPrice = filters.maxPrice === null || product.price <= filters.maxPrice;
+    return matchesMinPrice && matchesMaxPrice;
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -61,7 +72,7 @@ const Products = () => {
       <div className="container px-4 md:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
           <aside className="hidden lg:block">
-            <FilterSidebar />
+            <FilterSidebar onFilterChange={setFilters} />
           </aside>
 
           <main className="space-y-12">
@@ -81,9 +92,9 @@ const Products = () => {
               </div>
               {loading ? (
                 <p className="text-center">Loading products...</p>
-              ) : products.length > 0 ? (
+              ) : filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {products.map((product) => (
+                  {filteredProducts.map((product) => (
                     <ProductCard 
                       key={product.id}
                       name={product.title}

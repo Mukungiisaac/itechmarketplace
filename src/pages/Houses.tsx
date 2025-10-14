@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Header from "@/components/Header";
@@ -5,6 +6,12 @@ import FilterSidebar from "@/components/FilterSidebar";
 import HouseCard from "@/components/HouseCard";
 
 const Houses = () => {
+  const [filters, setFilters] = useState({
+    category: "all",
+    minPrice: null as number | null,
+    maxPrice: null as number | null,
+  });
+
   const houses = [
     {
       name: "Somoni",
@@ -58,6 +65,17 @@ const Houses = () => {
     },
   ];
 
+  const extractPrice = (priceStr: string) => {
+    return parseFloat(priceStr.replace(/[^0-9.]/g, ""));
+  };
+
+  const filteredHouses = houses.filter((house) => {
+    const price = extractPrice(house.price);
+    const matchesMinPrice = filters.minPrice === null || price >= filters.minPrice;
+    const matchesMaxPrice = filters.maxPrice === null || price <= filters.maxPrice;
+    return matchesMinPrice && matchesMaxPrice;
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -65,7 +83,7 @@ const Houses = () => {
       <div className="container px-4 md:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
           <aside className="hidden lg:block">
-            <FilterSidebar />
+            <FilterSidebar onFilterChange={setFilters} />
           </aside>
 
           <main className="space-y-12">
@@ -84,7 +102,7 @@ const Houses = () => {
                 <p className="text-muted-foreground mt-1">Browse our collection of quality homes</p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {houses.map((house, index) => (
+                {filteredHouses.map((house, index) => (
                   <HouseCard key={index} {...house} />
                 ))}
               </div>

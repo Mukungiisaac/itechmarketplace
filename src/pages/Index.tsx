@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Header from "@/components/Header";
@@ -6,6 +7,12 @@ import HouseCard from "@/components/HouseCard";
 import ProductCard from "@/components/ProductCard";
 
 const Index = () => {
+  const [filters, setFilters] = useState({
+    category: "all",
+    minPrice: null as number | null,
+    maxPrice: null as number | null,
+  });
+
   const houses = [
     {
       name: "Somoni",
@@ -78,6 +85,26 @@ const Index = () => {
     },
   ];
 
+  const extractPrice = (priceStr: string) => {
+    return parseFloat(priceStr.replace(/[^0-9.]/g, ""));
+  };
+
+  const filteredHouses = houses.filter((house) => {
+    const price = extractPrice(house.price);
+    const matchesCategory = filters.category === "all" || filters.category === "houses";
+    const matchesMinPrice = filters.minPrice === null || price >= filters.minPrice;
+    const matchesMaxPrice = filters.maxPrice === null || price <= filters.maxPrice;
+    return matchesCategory && matchesMinPrice && matchesMaxPrice;
+  });
+
+  const filteredProducts = products.filter((product) => {
+    const price = extractPrice(product.price);
+    const matchesCategory = filters.category === "all" || filters.category === "products";
+    const matchesMinPrice = filters.minPrice === null || price >= filters.minPrice;
+    const matchesMaxPrice = filters.maxPrice === null || price <= filters.maxPrice;
+    return matchesCategory && matchesMinPrice && matchesMaxPrice;
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -86,7 +113,7 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
           {/* Sidebar */}
           <aside className="hidden lg:block">
-            <FilterSidebar />
+            <FilterSidebar onFilterChange={setFilters} />
           </aside>
 
           {/* Main Content */}
@@ -102,30 +129,34 @@ const Index = () => {
             </div>
 
             {/* Available Houses */}
-            <section className="space-y-6 animate-fade-in">
-              <div>
-                <h2 className="text-3xl font-bold tracking-tight">Available Houses</h2>
-                <p className="text-muted-foreground mt-1">Browse our collection of quality homes</p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {houses.map((house, index) => (
-                  <HouseCard key={index} {...house} />
-                ))}
-              </div>
-            </section>
+            {(filters.category === "all" || filters.category === "houses") && (
+              <section className="space-y-6 animate-fade-in">
+                <div>
+                  <h2 className="text-3xl font-bold tracking-tight">Available Houses</h2>
+                  <p className="text-muted-foreground mt-1">Browse our collection of quality homes</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {filteredHouses.map((house, index) => (
+                    <HouseCard key={index} {...house} />
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Marketplace Items */}
-            <section className="space-y-6 animate-fade-in">
-              <div>
-                <h2 className="text-3xl font-bold tracking-tight">Marketplace Items</h2>
-                <p className="text-muted-foreground mt-1">Discover great deals on products</p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {products.map((product, index) => (
-                  <ProductCard key={index} {...product} />
-                ))}
-              </div>
-            </section>
+            {(filters.category === "all" || filters.category === "products") && (
+              <section className="space-y-6 animate-fade-in">
+                <div>
+                  <h2 className="text-3xl font-bold tracking-tight">Marketplace Items</h2>
+                  <p className="text-muted-foreground mt-1">Discover great deals on products</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {filteredProducts.map((product, index) => (
+                    <ProductCard key={index} {...product} />
+                  ))}
+                </div>
+              </section>
+            )}
           </main>
         </div>
       </div>
