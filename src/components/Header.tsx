@@ -35,7 +35,9 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
         <Link to="/" className="flex items-center gap-2 font-bold text-xl">
-          <img src={logoImage} alt="iTech Studio" className="h-10 w-10 object-contain" />
+          <div className="rounded-full bg-gradient-primary p-1 flex items-center justify-center">
+            <img src={logoImage} alt="iTech Studio" className="h-8 w-8 object-contain rounded-full" />
+          </div>
           <span className="bg-gradient-primary bg-clip-text text-transparent">iTechMarketplace</span>
         </Link>
         
