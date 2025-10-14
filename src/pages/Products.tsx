@@ -48,7 +48,31 @@ const Products = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setProducts(data || []);
+
+      // If the relationship isn't configured in the DB, profiles may come back null.
+      // Fallback: fetch the needed profiles separately and stitch them in.
+      let results: any[] = data || [];
+      const needsProfileFetch = results.some((p: any) => !p.profiles);
+
+      if (needsProfileFetch && results.length) {
+        const sellerIds = Array.from(new Set(results.map((p: any) => p.seller_id)));
+        const { data: profilesData, error: profilesError } = await supabase
+          .from("profiles")
+          .select("id, full_name, phone_number")
+          .in("id", sellerIds);
+
+        if (!profilesError && profilesData) {
+          const map = Object.fromEntries(
+            profilesData.map((pr: any) => [pr.id, { full_name: pr.full_name, phone_number: pr.phone_number }])
+          );
+          results = results.map((p: any) => ({
+            ...p,
+            profiles: p.profiles || map[p.seller_id] || null,
+          }));
+        }
+      }
+
+      setProducts(results as Product[]);
     } catch (error: any) {
       toast({
         title: "Error",
