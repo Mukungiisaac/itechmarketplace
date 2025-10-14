@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery } from "@tanstack/react-query";
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,40 +21,27 @@ const Index = () => {
     minPrice: null as number | null,
     maxPrice: null as number | null,
   });
-  const [products, setProducts] = useState<any[]>([]);
-  const [services, setServices] = useState<any[]>([]);
-  const [houses, setHouses] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchProducts();
-    fetchServices();
-    fetchHouses();
-  }, []);
-
-  const fetchProducts = async () => {
-    try {
-      // Fetch products with profiles
-      const { data: productsData, error: productsError } = await supabase
+  const { data: products = [], isLoading: productsLoading } = useQuery({
+    queryKey: ['homepage-products'],
+    queryFn: async () => {
+      const { data: productsData, error } = await supabase
         .from("products")
         .select(`
           *,
-          profiles:seller_id (
-            full_name,
-            phone_number
-          )
-        `);
+          profiles:seller_id (full_name, phone_number)
+        `)
+        .limit(4);
 
-      if (productsError) throw productsError;
+      if (error) throw error;
 
-      // Fetch user roles to get promoted status
       const sellerIds = productsData?.map(p => p.seller_id) || [];
       const { data: userRolesData } = await supabase
         .from("user_roles")
         .select("user_id, promoted")
         .in("user_id", sellerIds);
 
-      const formattedProducts = productsData?.map((product: any) => {
+      const formatted = productsData?.map((product: any) => {
         const userRole = userRolesData?.find(ur => ur.user_id === product.seller_id);
         return {
           name: product.title,
@@ -65,83 +54,54 @@ const Index = () => {
         };
       }) || [];
 
-      // Sort by promoted status (promoted first)
-      const sortedProducts = formattedProducts.sort((a: any, b: any) => {
-        if (a.promoted && !b.promoted) return -1;
-        if (!a.promoted && b.promoted) return 1;
-        return 0;
-      });
+      return formatted.sort((a: any, b: any) => (a.promoted === b.promoted ? 0 : a.promoted ? -1 : 1));
+    },
+    staleTime: 30000,
+  });
 
-      setProducts(sortedProducts);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load products",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchServices = async () => {
-    try {
-      const { data: servicesData, error: servicesError } = await supabase
+  const { data: services = [], isLoading: servicesLoading } = useQuery({
+    queryKey: ['homepage-services'],
+    queryFn: async () => {
+      const { data: servicesData, error } = await supabase
         .from("services")
-        .select("*");
+        .select("*")
+        .limit(2);
 
-      if (servicesError) throw servicesError;
+      if (error) throw error;
 
-      // Fetch user roles to get promoted status
       const providerIds = servicesData?.map(s => s.provider_id) || [];
       const { data: userRolesData } = await supabase
         .from("user_roles")
         .select("user_id, promoted")
         .in("user_id", providerIds);
 
-      // Add promoted status and sort
       const servicesWithPromoted = (servicesData || []).map((service: any) => {
         const userRole = userRolesData?.find(ur => ur.user_id === service.provider_id);
-        return {
-          ...service,
-          promoted: userRole?.promoted || false,
-        };
+        return { ...service, promoted: userRole?.promoted || false };
       });
 
-      const sortedServices = servicesWithPromoted.sort((a: any, b: any) => {
-        if (a.promoted && !b.promoted) return -1;
-        if (!a.promoted && b.promoted) return 1;
-        return 0;
-      });
+      return servicesWithPromoted.sort((a: any, b: any) => (a.promoted === b.promoted ? 0 : a.promoted ? -1 : 1));
+    },
+    staleTime: 30000,
+  });
 
-      setServices(sortedServices);
-    } catch (error) {
-      console.error("Error fetching services:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load services",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const fetchHouses = async () => {
-    try {
-      const { data: housesData, error: housesError } = await supabase
+  const { data: houses = [], isLoading: housesLoading } = useQuery({
+    queryKey: ['homepage-houses'],
+    queryFn: async () => {
+      const { data: housesData, error } = await supabase
         .from("houses")
-        .select("*");
+        .select("*")
+        .limit(2);
 
-      if (housesError) throw housesError;
+      if (error) throw error;
 
-      // Fetch user roles to get promoted status
       const landlordIds = housesData?.map(h => h.landlord_id) || [];
       const { data: userRolesData } = await supabase
         .from("user_roles")
         .select("user_id, promoted")
         .in("user_id", landlordIds);
 
-      const formattedHouses = housesData?.map((house: any) => {
+      const formatted = housesData?.map((house: any) => {
         const userRole = userRolesData?.find(ur => ur.user_id === house.landlord_id);
         return {
           name: house.title,
@@ -156,25 +116,10 @@ const Index = () => {
         };
       }) || [];
 
-      // Sort by promoted status (promoted first)
-      const sortedHouses = formattedHouses.sort((a: any, b: any) => {
-        if (a.promoted && !b.promoted) return -1;
-        if (!a.promoted && b.promoted) return 1;
-        return 0;
-      });
-
-      setHouses(sortedHouses);
-    } catch (error) {
-      console.error("Error fetching houses:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load houses",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+      return formatted.sort((a: any, b: any) => (a.promoted === b.promoted ? 0 : a.promoted ? -1 : 1));
+    },
+    staleTime: 30000,
+  });
 
   const extractPrice = (priceStr: string | number) => {
     if (typeof priceStr === 'number') return priceStr;
@@ -190,7 +135,7 @@ const Index = () => {
       product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.seller.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesMinPrice && matchesMaxPrice && matchesSearch;
-  }).slice(0, 4);
+  });
 
   const filteredServices = services.filter((service) => {
     const price = extractPrice(service.price);
@@ -201,7 +146,7 @@ const Index = () => {
       service.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       service.category.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesMinPrice && matchesMaxPrice && matchesSearch;
-  }).slice(0, 2);
+  });
 
   const filteredHouses = houses.filter((house) => {
     const price = extractPrice(house.price);
@@ -212,7 +157,7 @@ const Index = () => {
       house.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
       house.type.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesMinPrice && matchesMaxPrice && matchesSearch;
-  }).slice(0, 2);
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -245,9 +190,17 @@ const Index = () => {
                 <h2 className="text-3xl font-bold tracking-tight">Available Houses</h2>
                 <p className="text-muted-foreground mt-1">Browse our collection of quality homes</p>
               </div>
-              {loading ? (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground">Loading houses...</p>
+              {housesLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {[1, 2].map((i) => (
+                    <Card key={i} className="overflow-hidden">
+                      <Skeleton className="aspect-video w-full" />
+                      <CardHeader>
+                        <Skeleton className="h-6 w-3/4" />
+                        <Skeleton className="h-4 w-full mt-2" />
+                      </CardHeader>
+                    </Card>
+                  ))}
                 </div>
               ) : filteredHouses.length === 0 ? (
                 <div className="text-center py-12">
@@ -268,9 +221,17 @@ const Index = () => {
                 <h2 className="text-3xl font-bold tracking-tight">Marketplace Items</h2>
                 <p className="text-muted-foreground mt-1">Discover great deals on products</p>
               </div>
-              {loading ? (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground">Loading products...</p>
+              {productsLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {[1, 2, 3, 4].map((i) => (
+                    <Card key={i} className="overflow-hidden">
+                      <Skeleton className="aspect-video w-full" />
+                      <CardHeader>
+                        <Skeleton className="h-6 w-3/4" />
+                        <Skeleton className="h-4 w-full mt-2" />
+                      </CardHeader>
+                    </Card>
+                  ))}
                 </div>
               ) : filteredProducts.length === 0 ? (
                 <div className="text-center py-12">
@@ -291,9 +252,17 @@ const Index = () => {
                 <h2 className="text-3xl font-bold tracking-tight">Available Services</h2>
                 <p className="text-muted-foreground mt-1">Find the services you need</p>
               </div>
-              {loading ? (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground">Loading services...</p>
+              {servicesLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {[1, 2].map((i) => (
+                    <Card key={i} className="overflow-hidden">
+                      <Skeleton className="aspect-video w-full" />
+                      <CardHeader>
+                        <Skeleton className="h-6 w-3/4" />
+                        <Skeleton className="h-4 w-full mt-2" />
+                      </CardHeader>
+                    </Card>
+                  ))}
                 </div>
               ) : filteredServices.length === 0 ? (
                 <div className="text-center py-12">

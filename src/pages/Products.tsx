@@ -1,13 +1,15 @@
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FilterSidebar from "@/components/FilterSidebar";
 import ProductCard from "@/components/ProductCard";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardHeader } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
 import {
   Sheet,
   SheetContent,
@@ -30,8 +32,6 @@ interface Product {
 }
 
 const Products = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     category: "all",
@@ -40,12 +40,9 @@ const Products = () => {
   });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
-    try {
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ['products'],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
         .select(`
@@ -59,19 +56,17 @@ const Products = () => {
 
       if (error) throw error;
 
-      // If the relationship isn't configured in the DB, profiles may come back null.
-      // Fallback: fetch the needed profiles separately and stitch them in.
       let results: any[] = data || [];
       const needsProfileFetch = results.some((p: any) => !p.profiles);
 
       if (needsProfileFetch && results.length) {
         const sellerIds = Array.from(new Set(results.map((p: any) => p.seller_id)));
-        const { data: profilesData, error: profilesError } = await supabase
+        const { data: profilesData } = await supabase
           .from("profiles")
           .select("id, full_name, phone_number")
           .in("id", sellerIds);
 
-        if (!profilesError && profilesData) {
+        if (profilesData) {
           const map = Object.fromEntries(
             profilesData.map((pr: any) => [pr.id, { full_name: pr.full_name, phone_number: pr.phone_number }])
           );
@@ -82,17 +77,10 @@ const Products = () => {
         }
       }
 
-      setProducts(results as Product[]);
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+      return results as Product[];
+    },
+    staleTime: 30000,
+  });
 
   const filteredProducts = products.filter((product) => {
     const matchesMinPrice = filters.minPrice === null || product.price >= filters.minPrice;
@@ -153,8 +141,19 @@ const Products = () => {
                 <h2 className="text-3xl font-bold tracking-tight">Marketplace Items</h2>
                 <p className="text-muted-foreground mt-1">Discover great deals on products</p>
               </div>
-              {loading ? (
-                <p className="text-center">Loading products...</p>
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <Card key={i} className="overflow-hidden">
+                      <Skeleton className="aspect-video w-full" />
+                      <CardHeader>
+                        <Skeleton className="h-6 w-3/4" />
+                        <Skeleton className="h-4 w-full mt-2" />
+                        <Skeleton className="h-4 w-2/3 mt-1" />
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
               ) : filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {filteredProducts.map((product) => (

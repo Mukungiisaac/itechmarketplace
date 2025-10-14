@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Header from "@/components/Header";
@@ -6,7 +6,9 @@ import Footer from "@/components/Footer";
 import FilterSidebar from "@/components/FilterSidebar";
 import HouseCard from "@/components/HouseCard";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardHeader } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
 
 interface House {
   id: string;
@@ -24,8 +26,6 @@ interface House {
 }
 
 const Houses = () => {
-  const [houses, setHouses] = useState<House[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     category: "all",
@@ -33,29 +33,19 @@ const Houses = () => {
     maxPrice: null as number | null,
   });
 
-  useEffect(() => {
-    fetchHouses();
-  }, []);
-
-  const fetchHouses = async () => {
-    try {
+  const { data: houses = [], isLoading } = useQuery({
+    queryKey: ['houses'],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from("houses")
         .select("*")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setHouses(data || []);
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+      return data || [];
+    },
+    staleTime: 30000,
+  });
 
   const filteredHouses = houses.filter((house) => {
     const matchesMinPrice = filters.minPrice === null || house.rent >= filters.minPrice;
@@ -94,8 +84,19 @@ const Houses = () => {
                 <h2 className="text-3xl font-bold tracking-tight">Available Houses</h2>
                 <p className="text-muted-foreground mt-1">Browse our collection of quality homes</p>
               </div>
-              {loading ? (
-                <p className="text-center">Loading houses...</p>
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <Card key={i} className="overflow-hidden">
+                      <Skeleton className="aspect-video w-full" />
+                      <CardHeader>
+                        <Skeleton className="h-6 w-3/4" />
+                        <Skeleton className="h-4 w-full mt-2" />
+                        <Skeleton className="h-4 w-2/3 mt-1" />
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
               ) : filteredHouses.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {filteredHouses.map((house) => (

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Header from "@/components/Header";
@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery } from "@tanstack/react-query";
 
 const Services = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,34 +18,20 @@ const Services = () => {
     minPrice: null as number | null,
     maxPrice: null as number | null,
   });
-  const [services, setServices] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
-  useEffect(() => {
-    fetchServices();
-  }, []);
-
-  const fetchServices = async () => {
-    try {
-      setLoading(true);
+  const { data: services = [], isLoading } = useQuery({
+    queryKey: ['services'],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from("services")
         .select("*")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setServices(data || []);
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "Failed to load services",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+      return data || [];
+    },
+    staleTime: 30000,
+  });
 
   const extractPrice = (priceStr: string) => {
     return parseFloat(priceStr.replace(/[^0-9.]/g, ""));
@@ -88,13 +75,24 @@ const Services = () => {
                 <h2 className="text-3xl font-bold tracking-tight">Available Services</h2>
                 <p className="text-muted-foreground mt-1">Find trusted service providers near campus</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {loading ? (
-                  <p className="text-muted-foreground">Loading services...</p>
-                ) : filteredServices.length === 0 ? (
-                  <p className="text-muted-foreground">No services found</p>
-                ) : (
-                  filteredServices.map((service) => (
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <Card key={i} className="overflow-hidden">
+                      <Skeleton className="aspect-video w-full" />
+                      <CardHeader>
+                        <Skeleton className="h-6 w-3/4" />
+                        <Skeleton className="h-4 w-full mt-2" />
+                        <Skeleton className="h-4 w-2/3 mt-1" />
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
+              ) : filteredServices.length === 0 ? (
+                <p className="text-center text-muted-foreground">No services found</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {filteredServices.map((service) => (
                     <Card key={service.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                       <div className="aspect-video relative overflow-hidden bg-muted">
                         <img
@@ -122,9 +120,9 @@ const Services = () => {
                         </Button>
                       </CardFooter>
                     </Card>
-                  ))
-                )}
-              </div>
+                  ))}
+                </div>
+              )}
             </section>
           </main>
         </div>
