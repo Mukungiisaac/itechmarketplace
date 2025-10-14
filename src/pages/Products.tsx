@@ -2,6 +2,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import FilterSidebar from "@/components/FilterSidebar";
 import ProductCard from "@/components/ProductCard";
 import { supabase } from "@/integrations/supabase/client";
@@ -144,6 +145,7 @@ const Products = () => {
           </main>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

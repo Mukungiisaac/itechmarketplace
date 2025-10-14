@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import FilterSidebar from "@/components/FilterSidebar";
 import HouseCard from "@/components/HouseCard";
 import { supabase } from "@/integrations/supabase/client";
@@ -118,6 +119,7 @@ const Houses = () => {
           </main>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

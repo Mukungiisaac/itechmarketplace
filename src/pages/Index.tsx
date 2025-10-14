@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import FilterSidebar from "@/components/FilterSidebar";
 import HouseCard from "@/components/HouseCard";
 import ProductCard from "@/components/ProductCard";
@@ -171,6 +172,7 @@ const Index = () => {
           </main>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import FilterSidebar from "@/components/FilterSidebar";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -128,6 +129,7 @@ const Services = () => {
           </main>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
