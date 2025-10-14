@@ -11,6 +11,8 @@ import HouseDetail from "./pages/HouseDetail";
 import ProductDetail from "./pages/ProductDetail";
 import Advertise from "./pages/Advertise";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import SellerDashboard from "./pages/SellerDashboard";
 import LandlordDashboard from "./pages/LandlordDashboard";
 import ServiceProviderDashboard from "./pages/ServiceProviderDashboard";
@@ -42,6 +44,8 @@ const App = () => (
           <Route path="/product-detail" element={<ProductDetail />} />
           <Route path="/advertise" element={<Advertise />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/seller-dashboard" element={<SellerDashboard />} />
           <Route path="/landlord-dashboard" element={<LandlordDashboard />} />
           <Route path="/service-provider-dashboard" element={<ServiceProviderDashboard />} />
