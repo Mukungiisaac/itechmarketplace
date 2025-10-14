@@ -7,6 +7,7 @@ import HouseCard from "@/components/HouseCard";
 import ProductCard from "@/components/ProductCard";
 
 const Index = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     category: "all",
     minPrice: null as number | null,
@@ -94,7 +95,11 @@ const Index = () => {
     const matchesCategory = filters.category === "all" || filters.category === "houses";
     const matchesMinPrice = filters.minPrice === null || price >= filters.minPrice;
     const matchesMaxPrice = filters.maxPrice === null || price <= filters.maxPrice;
-    return matchesCategory && matchesMinPrice && matchesMaxPrice;
+    const matchesSearch = searchTerm === "" || 
+      house.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      house.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      house.type.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesMinPrice && matchesMaxPrice && matchesSearch;
   });
 
   const filteredProducts = products.filter((product) => {
@@ -102,7 +107,11 @@ const Index = () => {
     const matchesCategory = filters.category === "all" || filters.category === "products";
     const matchesMinPrice = filters.minPrice === null || price >= filters.minPrice;
     const matchesMaxPrice = filters.maxPrice === null || price <= filters.maxPrice;
-    return matchesCategory && matchesMinPrice && matchesMaxPrice;
+    const matchesSearch = searchTerm === "" ||
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.seller.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesMinPrice && matchesMaxPrice && matchesSearch;
   });
 
   return (
@@ -123,8 +132,10 @@ const Index = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search products..."
+                placeholder="Search houses, products, services..."
                 className="pl-10 h-12 text-base"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 

@@ -23,6 +23,7 @@ interface Product {
 const Products = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     category: "all",
     minPrice: null as number | null,
@@ -62,7 +63,11 @@ const Products = () => {
   const filteredProducts = products.filter((product) => {
     const matchesMinPrice = filters.minPrice === null || product.price >= filters.minPrice;
     const matchesMaxPrice = filters.maxPrice === null || product.price <= filters.maxPrice;
-    return matchesMinPrice && matchesMaxPrice;
+    const matchesSearch = searchTerm === "" ||
+      product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.profiles?.full_name.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesMinPrice && matchesMaxPrice && matchesSearch;
   });
 
   return (
@@ -82,6 +87,8 @@ const Products = () => {
                 type="search"
                 placeholder="Search products..."
                 className="pl-10 h-12 text-base"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 

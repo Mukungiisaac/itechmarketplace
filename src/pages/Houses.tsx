@@ -6,6 +6,7 @@ import FilterSidebar from "@/components/FilterSidebar";
 import HouseCard from "@/components/HouseCard";
 
 const Houses = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     category: "all",
     minPrice: null as number | null,
@@ -73,7 +74,11 @@ const Houses = () => {
     const price = extractPrice(house.price);
     const matchesMinPrice = filters.minPrice === null || price >= filters.minPrice;
     const matchesMaxPrice = filters.maxPrice === null || price <= filters.maxPrice;
-    return matchesMinPrice && matchesMaxPrice;
+    const matchesSearch = searchTerm === "" || 
+      house.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      house.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      house.type.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesMinPrice && matchesMaxPrice && matchesSearch;
   });
 
   return (
@@ -93,6 +98,8 @@ const Houses = () => {
                 type="search"
                 placeholder="Search houses..."
                 className="pl-10 h-12 text-base"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 

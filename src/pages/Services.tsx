@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 const Services = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     category: "all",
     minPrice: null as number | null,
@@ -34,7 +35,11 @@ const Services = () => {
     const price = extractPrice(service.price);
     const matchesMinPrice = filters.minPrice === null || price >= filters.minPrice;
     const matchesMaxPrice = filters.maxPrice === null || price <= filters.maxPrice;
-    return matchesMinPrice && matchesMaxPrice;
+    const matchesSearch = searchTerm === "" ||
+      service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.category.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesMinPrice && matchesMaxPrice && matchesSearch;
   });
 
   return (
@@ -54,6 +59,8 @@ const Services = () => {
                 type="search"
                 placeholder="Search services..."
                 className="pl-10 h-12 text-base"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
