@@ -182,6 +182,9 @@ export type Database = {
           approved_by: string | null
           created_at: string
           id: string
+          promoted: boolean | null
+          promoted_at: string | null
+          promoted_by: string | null
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
@@ -191,6 +194,9 @@ export type Database = {
           approved_by?: string | null
           created_at?: string
           id?: string
+          promoted?: boolean | null
+          promoted_at?: string | null
+          promoted_by?: string | null
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
@@ -200,6 +206,9 @@ export type Database = {
           approved_by?: string | null
           created_at?: string
           id?: string
+          promoted?: boolean | null
+          promoted_at?: string | null
+          promoted_by?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }

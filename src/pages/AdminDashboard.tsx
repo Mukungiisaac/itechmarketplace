@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { LogOut, CheckCircle, XCircle } from "lucide-react";
+import { LogOut, CheckCircle, XCircle, Star, StarOff } from "lucide-react";
 import Header from "@/components/Header";
 
 interface UserRole {
@@ -15,6 +15,8 @@ interface UserRole {
   role: string;
   approved: boolean;
   approved_at: string | null;
+  promoted: boolean;
+  promoted_at: string | null;
   profiles: {
     full_name: string;
     email: string;
@@ -190,6 +192,64 @@ const AdminDashboard = () => {
     }
   };
 
+  const handlePromote = async (roleId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const { error } = await supabase
+        .from("user_roles")
+        .update({
+          promoted: true,
+          promoted_at: new Date().toISOString(),
+          promoted_by: user?.id,
+        })
+        .eq("id", roleId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "User promoted successfully. Their items will appear first on the home page.",
+      });
+
+      fetchUsers();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUnpromote = async (roleId: string) => {
+    try {
+      const { error } = await supabase
+        .from("user_roles")
+        .update({
+          promoted: false,
+          promoted_at: null,
+          promoted_by: null,
+        })
+        .eq("id", roleId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Promotion removed.",
+      });
+
+      fetchUsers();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/login");
@@ -280,6 +340,7 @@ const AdminDashboard = () => {
                       <TableHead>Email</TableHead>
                       <TableHead>Phone</TableHead>
                       <TableHead>Approved At</TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -295,14 +356,45 @@ const AdminDashboard = () => {
                             : "-"}
                         </TableCell>
                         <TableCell>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleReject(user.id)}
-                          >
-                            <XCircle className="h-4 w-4 mr-1" />
-                            Revoke
-                          </Button>
+                          {user.promoted ? (
+                            <span className="flex items-center text-yellow-600 gap-1">
+                              <Star className="h-4 w-4 fill-yellow-600" />
+                              Promoted
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">Regular</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            {user.promoted ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleUnpromote(user.id)}
+                              >
+                                <StarOff className="h-4 w-4 mr-1" />
+                                Unpromote
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="default"
+                                onClick={() => handlePromote(user.id)}
+                              >
+                                <Star className="h-4 w-4 mr-1" />
+                                Promote
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleReject(user.id)}
+                            >
+                              <XCircle className="h-4 w-4 mr-1" />
+                              Revoke
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}

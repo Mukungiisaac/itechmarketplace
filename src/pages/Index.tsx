@@ -32,7 +32,8 @@ const Index = () => {
 
   const fetchProducts = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch products with profiles
+      const { data: productsData, error: productsError } = await supabase
         .from("products")
         .select(`
           *,
@@ -42,18 +43,36 @@ const Index = () => {
           )
         `);
 
-      if (error) throw error;
+      if (productsError) throw productsError;
 
-      const formattedProducts = data?.map((product) => ({
-        name: product.title,
-        price: `KES ${product.price}`,
-        description: product.description || "",
-        seller: product.profiles?.full_name || "Unknown Seller",
-        phone: product.profiles?.phone_number || "",
-        image: product.photo_url || "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&q=80",
-      })) || [];
+      // Fetch user roles to get promoted status
+      const sellerIds = productsData?.map(p => p.seller_id) || [];
+      const { data: userRolesData } = await supabase
+        .from("user_roles")
+        .select("user_id, promoted")
+        .in("user_id", sellerIds);
 
-      setProducts(formattedProducts);
+      const formattedProducts = productsData?.map((product: any) => {
+        const userRole = userRolesData?.find(ur => ur.user_id === product.seller_id);
+        return {
+          name: product.title,
+          price: `KES ${product.price}`,
+          description: product.description || "",
+          seller: product.profiles?.full_name || "Unknown Seller",
+          phone: product.profiles?.phone_number || "",
+          image: product.photo_url || "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&q=80",
+          promoted: userRole?.promoted || false,
+        };
+      }) || [];
+
+      // Sort by promoted status (promoted first)
+      const sortedProducts = formattedProducts.sort((a: any, b: any) => {
+        if (a.promoted && !b.promoted) return -1;
+        if (!a.promoted && b.promoted) return 1;
+        return 0;
+      });
+
+      setProducts(sortedProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
       toast({
@@ -68,12 +87,35 @@ const Index = () => {
 
   const fetchServices = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: servicesData, error: servicesError } = await supabase
         .from("services")
         .select("*");
 
-      if (error) throw error;
-      setServices(data || []);
+      if (servicesError) throw servicesError;
+
+      // Fetch user roles to get promoted status
+      const providerIds = servicesData?.map(s => s.provider_id) || [];
+      const { data: userRolesData } = await supabase
+        .from("user_roles")
+        .select("user_id, promoted")
+        .in("user_id", providerIds);
+
+      // Add promoted status and sort
+      const servicesWithPromoted = (servicesData || []).map((service: any) => {
+        const userRole = userRolesData?.find(ur => ur.user_id === service.provider_id);
+        return {
+          ...service,
+          promoted: userRole?.promoted || false,
+        };
+      });
+
+      const sortedServices = servicesWithPromoted.sort((a: any, b: any) => {
+        if (a.promoted && !b.promoted) return -1;
+        if (!a.promoted && b.promoted) return 1;
+        return 0;
+      });
+
+      setServices(sortedServices);
     } catch (error) {
       console.error("Error fetching services:", error);
       toast({
@@ -86,24 +128,42 @@ const Index = () => {
 
   const fetchHouses = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: housesData, error: housesError } = await supabase
         .from("houses")
         .select("*");
 
-      if (error) throw error;
+      if (housesError) throw housesError;
 
-      const formattedHouses = data?.map((house) => ({
-        name: house.title,
-        price: `KSh ${house.rent}`,
-        location: house.location,
-        type: house.house_type,
-        hasWater: house.water === "yes",
-        hasWifi: house.wifi === "yes",
-        phone: house.contact_number || "",
-        image: house.photo_url || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
-      })) || [];
+      // Fetch user roles to get promoted status
+      const landlordIds = housesData?.map(h => h.landlord_id) || [];
+      const { data: userRolesData } = await supabase
+        .from("user_roles")
+        .select("user_id, promoted")
+        .in("user_id", landlordIds);
 
-      setHouses(formattedHouses);
+      const formattedHouses = housesData?.map((house: any) => {
+        const userRole = userRolesData?.find(ur => ur.user_id === house.landlord_id);
+        return {
+          name: house.title,
+          price: `KSh ${house.rent}`,
+          location: house.location,
+          type: house.house_type,
+          hasWater: house.water === "yes",
+          hasWifi: house.wifi === "yes",
+          phone: house.contact_number || "",
+          image: house.photo_url || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
+          promoted: userRole?.promoted || false,
+        };
+      }) || [];
+
+      // Sort by promoted status (promoted first)
+      const sortedHouses = formattedHouses.sort((a: any, b: any) => {
+        if (a.promoted && !b.promoted) return -1;
+        if (!a.promoted && b.promoted) return 1;
+        return 0;
+      });
+
+      setHouses(sortedHouses);
     } catch (error) {
       console.error("Error fetching houses:", error);
       toast({
