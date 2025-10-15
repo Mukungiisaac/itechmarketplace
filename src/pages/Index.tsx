@@ -56,7 +56,7 @@ const Index = () => {
 
       return formatted.sort((a: any, b: any) => (a.promoted === b.promoted ? 0 : a.promoted ? -1 : 1));
     },
-    staleTime: 30000,
+    staleTime: 0,
   });
 
   const { data: services = [], isLoading: servicesLoading } = useQuery({
