@@ -32,69 +32,69 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 animate-fade-in-down">
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
-        <Link to="/" className="flex items-center gap-2 font-bold text-xl">
-          <div className="relative rounded-full p-[2px] bg-gradient-primary">
+        <Link to="/" className="flex items-center gap-2 font-bold text-xl group">
+          <div className="relative rounded-full p-[2px] bg-gradient-primary transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12">
             <div className="rounded-full bg-white p-1 flex items-center justify-center">
               <img src={logoImage} alt="iTech Studio" className="h-7 w-7 object-contain" />
             </div>
           </div>
-          <span className="bg-gradient-primary bg-clip-text text-transparent">iTechMarketplace</span>
+          <span className="bg-gradient-primary bg-clip-text text-transparent transition-all duration-300 group-hover:tracking-wide">iTechMarketplace</span>
         </Link>
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1">
-          <Button variant="ghost" size="sm" asChild>
+          <Button variant="ghost" size="sm" asChild className="transition-all duration-300 hover:scale-105">
             <Link to="/" className="gap-2">
-              <Home className="h-4 w-4" />
+              <Home className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
               Home
             </Link>
           </Button>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/products" className="gap-2">
-              <Package className="h-4 w-4" />
+          <Button variant="ghost" size="sm" asChild className="transition-all duration-300 hover:scale-105">
+            <Link to="/products" className="gap-2 group">
+              <Package className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
               Products
             </Link>
           </Button>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/houses" className="gap-2">
-              <Building2 className="h-4 w-4" />
+          <Button variant="ghost" size="sm" asChild className="transition-all duration-300 hover:scale-105">
+            <Link to="/houses" className="gap-2 group">
+              <Building2 className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
               Houses
             </Link>
           </Button>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/services" className="gap-2">
-              <Wrench className="h-4 w-4" />
+          <Button variant="ghost" size="sm" asChild className="transition-all duration-300 hover:scale-105">
+            <Link to="/services" className="gap-2 group">
+              <Wrench className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
               Services
             </Link>
           </Button>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/advertise" className="gap-2">
-              <Megaphone className="h-4 w-4" />
+          <Button variant="ghost" size="sm" asChild className="transition-all duration-300 hover:scale-105">
+            <Link to="/advertise" className="gap-2 group">
+              <Megaphone className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
               Advertise
             </Link>
           </Button>
           {isSeller && (
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/seller-dashboard" className="gap-2">
-                <LayoutDashboard className="h-4 w-4" />
+            <Button variant="ghost" size="sm" asChild className="transition-all duration-300 hover:scale-105">
+              <Link to="/seller-dashboard" className="gap-2 group">
+                <LayoutDashboard className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
                 Dashboard
               </Link>
             </Button>
           )}
           {isLandlord && (
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/landlord-dashboard" className="gap-2">
-                <LayoutDashboard className="h-4 w-4" />
+            <Button variant="ghost" size="sm" asChild className="transition-all duration-300 hover:scale-105">
+              <Link to="/landlord-dashboard" className="gap-2 group">
+                <LayoutDashboard className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
                 Dashboard
               </Link>
             </Button>
           )}
           {isServiceProvider && (
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/service-provider-dashboard" className="gap-2">
-                <LayoutDashboard className="h-4 w-4" />
+            <Button variant="ghost" size="sm" asChild className="transition-all duration-300 hover:scale-105">
+              <Link to="/service-provider-dashboard" className="gap-2 group">
+                <LayoutDashboard className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
                 Dashboard
               </Link>
             </Button>
@@ -102,7 +102,7 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button size="sm" asChild className="gap-2 hidden md:flex">
+          <Button size="sm" asChild className="gap-2 hidden md:flex transition-all duration-300 hover:scale-105 hover:shadow-lg">
             <Link to="/login">
               <LogIn className="h-4 w-4" />
               Login
@@ -116,40 +116,40 @@ const Header = () => {
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[280px] sm:w-[350px]">
+            <SheetContent side="right" className="w-[280px] sm:w-[350px] animate-slide-in-right">
               <nav className="flex flex-col gap-4 mt-8">
-                <Button variant="ghost" size="lg" asChild className="justify-start gap-3">
+                <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
                   <Link to="/" onClick={() => setIsOpen(false)}>
                     <Home className="h-5 w-5" />
                     Home
                   </Link>
                 </Button>
-                <Button variant="ghost" size="lg" asChild className="justify-start gap-3">
+                <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
                   <Link to="/products" onClick={() => setIsOpen(false)}>
                     <Package className="h-5 w-5" />
                     Products
                   </Link>
                 </Button>
-                <Button variant="ghost" size="lg" asChild className="justify-start gap-3">
+                <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
                   <Link to="/houses" onClick={() => setIsOpen(false)}>
                     <Building2 className="h-5 w-5" />
                     Houses
                   </Link>
                 </Button>
-                <Button variant="ghost" size="lg" asChild className="justify-start gap-3">
+                <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
                   <Link to="/services" onClick={() => setIsOpen(false)}>
                     <Wrench className="h-5 w-5" />
                     Services
                   </Link>
                 </Button>
-                <Button variant="ghost" size="lg" asChild className="justify-start gap-3">
+                <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
                   <Link to="/advertise" onClick={() => setIsOpen(false)}>
                     <Megaphone className="h-5 w-5" />
                     Advertise
                   </Link>
                 </Button>
                 {isSeller && (
-                  <Button variant="ghost" size="lg" asChild className="justify-start gap-3">
+                  <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
                     <Link to="/seller-dashboard" onClick={() => setIsOpen(false)}>
                       <LayoutDashboard className="h-5 w-5" />
                       Seller Dashboard
@@ -157,7 +157,7 @@ const Header = () => {
                   </Button>
                 )}
                 {isLandlord && (
-                  <Button variant="ghost" size="lg" asChild className="justify-start gap-3">
+                  <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
                     <Link to="/landlord-dashboard" onClick={() => setIsOpen(false)}>
                       <LayoutDashboard className="h-5 w-5" />
                       Landlord Dashboard
@@ -165,14 +165,14 @@ const Header = () => {
                   </Button>
                 )}
                 {isServiceProvider && (
-                  <Button variant="ghost" size="lg" asChild className="justify-start gap-3">
+                  <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
                     <Link to="/service-provider-dashboard" onClick={() => setIsOpen(false)}>
                       <LayoutDashboard className="h-5 w-5" />
                       Service Provider Dashboard
                     </Link>
                   </Button>
                 )}
-                <Button size="lg" asChild className="gap-3 mt-4">
+                <Button size="lg" asChild className="gap-3 mt-4 transition-all duration-300 hover:scale-105 hover:shadow-lg">
                   <Link to="/login" onClick={() => setIsOpen(false)}>
                     <LogIn className="h-5 w-5" />
                     Login

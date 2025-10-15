@@ -32,12 +32,13 @@ const HouseCard = ({
   };
 
   return (
-    <Card className="group overflow-hidden transition-all duration-300 hover:shadow-card-hover">
-      <div className="aspect-[4/3] overflow-hidden bg-muted">
+    <Card className="group overflow-hidden transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1 animate-fade-in-up">
+      <div className="aspect-[4/3] overflow-hidden bg-muted relative">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
         <img
           src={image}
           alt={name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
       </div>
       <CardContent className="p-5 space-y-3">
@@ -69,11 +70,15 @@ const HouseCard = ({
         </div>
 
         <div className="pt-2">
-          <p className="text-2xl font-bold text-primary">{price}</p>
+          <p className="text-2xl font-bold text-primary transition-transform duration-300 group-hover:scale-105 inline-block">{price}</p>
         </div>
       </CardContent>
       <CardFooter className="p-5 pt-0 gap-2">
-        <Button variant="outline" className="flex-1" onClick={handleViewDetails}>
+        <Button 
+          variant="outline" 
+          className="flex-1 transition-all duration-300 hover:scale-105 hover:shadow-md" 
+          onClick={handleViewDetails}
+        >
           View Details
         </Button>
       </CardFooter>
