@@ -17,6 +17,7 @@ import SellerDashboard from "./pages/SellerDashboard";
 import LandlordDashboard from "./pages/LandlordDashboard";
 import ServiceProviderDashboard from "./pages/ServiceProviderDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
 // Create QueryClient outside component to prevent recreation on every render
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/landlord-dashboard" element={<LandlordDashboard />} />
           <Route path="/service-provider-dashboard" element={<ServiceProviderDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/install" element={<Install />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
