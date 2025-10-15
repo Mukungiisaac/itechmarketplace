@@ -25,38 +25,52 @@ const Index = () => {
   const { data: products = [], isLoading: productsLoading } = useQuery({
     queryKey: ['homepage-products'],
     queryFn: async () => {
-      // First get promoted sellers
+      // Try to fetch promoted sellers; if none (or not visible due to RLS), fall back to latest products
       const { data: promotedUsers, error: rolesError } = await supabase
         .from("user_roles")
         .select("user_id")
         .eq("promoted", true);
 
-      if (rolesError) throw rolesError;
+      if (rolesError) {
+        console.warn('Failed to load promoted users:', rolesError);
+      }
 
-      const promotedUserIds = promotedUsers?.map(u => u.user_id) || [];
+      const promotedUserIds = promotedUsers?.map((u: any) => u.user_id) || [];
 
-      if (promotedUserIds.length === 0) return [];
+      let productsData;
+      let error;
 
-      // Get products only from promoted sellers
-      const { data: productsData, error } = await supabase
-        .from("products")
-        .select(`
-          *,
-          profiles:seller_id (full_name, phone_number)
-        `)
-        .in("seller_id", promotedUserIds);
+      if (promotedUserIds.length > 0) {
+        ({ data: productsData, error } = await supabase
+          .from("products")
+          .select(`
+            *,
+            profiles:seller_id (full_name, phone_number)
+          `)
+          .in("seller_id", promotedUserIds)
+          .order('created_at', { ascending: false }));
+      } else {
+        ({ data: productsData, error } = await supabase
+          .from("products")
+          .select(`
+            *,
+            profiles:seller_id (full_name, phone_number)
+          `)
+          .order('created_at', { ascending: false })
+          .limit(12));
+      }
 
       if (error) throw error;
 
-      const formatted = productsData?.map((product: any) => ({
+      const formatted = (productsData || []).map((product: any) => ({
         name: product.title,
         price: `KES ${product.price}`,
         description: product.description || "",
         seller: product.profiles?.full_name || "Unknown Seller",
         phone: product.profiles?.phone_number || "",
         image: product.photo_url || "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&q=80",
-        promoted: true,
-      })) || [];
+        promoted: promotedUserIds.length > 0,
+      }));
 
       return formatted;
     },
@@ -68,29 +82,40 @@ const Index = () => {
   const { data: services = [], isLoading: servicesLoading } = useQuery({
     queryKey: ['homepage-services'],
     queryFn: async () => {
-      // First get promoted service providers
+      // Try to fetch promoted service providers; if none (or not visible due to RLS), fall back to latest services
       const { data: promotedUsers, error: rolesError } = await supabase
         .from("user_roles")
         .select("user_id")
         .eq("promoted", true);
 
-      if (rolesError) throw rolesError;
+      if (rolesError) {
+        console.warn('Failed to load promoted users:', rolesError);
+      }
 
-      const promotedUserIds = promotedUsers?.map(u => u.user_id) || [];
+      const promotedUserIds = promotedUsers?.map((u: any) => u.user_id) || [];
 
-      if (promotedUserIds.length === 0) return [];
+      let servicesData;
+      let error;
 
-      // Get services only from promoted providers
-      const { data: servicesData, error } = await supabase
-        .from("services")
-        .select("*")
-        .in("provider_id", promotedUserIds);
+      if (promotedUserIds.length > 0) {
+        ({ data: servicesData, error } = await supabase
+          .from("services")
+          .select("*")
+          .in("provider_id", promotedUserIds)
+          .order('created_at', { ascending: false }));
+      } else {
+        ({ data: servicesData, error } = await supabase
+          .from("services")
+          .select("*")
+          .order('created_at', { ascending: false })
+          .limit(12));
+      }
 
       if (error) throw error;
 
       return (servicesData || []).map((service: any) => ({
         ...service,
-        promoted: true,
+        promoted: promotedUserIds.length > 0,
       }));
     },
     refetchInterval: 5000,
@@ -101,27 +126,38 @@ const Index = () => {
   const { data: houses = [], isLoading: housesLoading } = useQuery({
     queryKey: ['homepage-houses'],
     queryFn: async () => {
-      // First get promoted landlords
+      // Try to fetch promoted landlords; if none (or not visible due to RLS), fall back to latest houses
       const { data: promotedUsers, error: rolesError } = await supabase
         .from("user_roles")
         .select("user_id")
         .eq("promoted", true);
 
-      if (rolesError) throw rolesError;
+      if (rolesError) {
+        console.warn('Failed to load promoted users:', rolesError);
+      }
 
-      const promotedUserIds = promotedUsers?.map(u => u.user_id) || [];
+      const promotedUserIds = promotedUsers?.map((u: any) => u.user_id) || [];
 
-      if (promotedUserIds.length === 0) return [];
+      let housesData;
+      let error;
 
-      // Get houses only from promoted landlords
-      const { data: housesData, error } = await supabase
-        .from("houses")
-        .select("*")
-        .in("landlord_id", promotedUserIds);
+      if (promotedUserIds.length > 0) {
+        ({ data: housesData, error } = await supabase
+          .from("houses")
+          .select("*")
+          .in("landlord_id", promotedUserIds)
+          .order('created_at', { ascending: false }));
+      } else {
+        ({ data: housesData, error } = await supabase
+          .from("houses")
+          .select("*")
+          .order('created_at', { ascending: false })
+          .limit(12));
+      }
 
       if (error) throw error;
 
-      const formatted = housesData?.map((house: any) => ({
+      const formatted = (housesData || []).map((house: any) => ({
         name: house.title,
         price: `KSh ${house.rent}`,
         location: house.location,
@@ -130,8 +166,8 @@ const Index = () => {
         hasWifi: house.wifi === "yes",
         phone: house.contact_number || "",
         image: house.photo_url || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
-        promoted: true,
-      })) || [];
+        promoted: promotedUserIds.length > 0,
+      }));
 
       return formatted;
     },
