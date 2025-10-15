@@ -79,7 +79,9 @@ const Products = () => {
 
       return results as Product[];
     },
-    staleTime: 30000,
+    refetchInterval: 5000,
+    refetchOnWindowFocus: true,
+    staleTime: 0,
   });
 
   const filteredProducts = products.filter((product) => {

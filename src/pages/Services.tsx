@@ -30,7 +30,9 @@ const Services = () => {
       if (error) throw error;
       return data || [];
     },
-    staleTime: 30000,
+    refetchInterval: 5000,
+    refetchOnWindowFocus: true,
+    staleTime: 0,
   });
 
   const extractPrice = (priceStr: string) => {

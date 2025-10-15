@@ -60,6 +60,8 @@ const Index = () => {
 
       return formatted;
     },
+    refetchInterval: 5000,
+    refetchOnWindowFocus: true,
     staleTime: 0,
   });
 
@@ -91,6 +93,8 @@ const Index = () => {
         promoted: true,
       }));
     },
+    refetchInterval: 5000,
+    refetchOnWindowFocus: true,
     staleTime: 0,
   });
 
@@ -131,6 +135,8 @@ const Index = () => {
 
       return formatted;
     },
+    refetchInterval: 5000,
+    refetchOnWindowFocus: true,
     staleTime: 0,
   });
 
