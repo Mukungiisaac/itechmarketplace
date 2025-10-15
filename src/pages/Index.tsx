@@ -25,36 +25,40 @@ const Index = () => {
   const { data: products = [], isLoading: productsLoading } = useQuery({
     queryKey: ['homepage-products'],
     queryFn: async () => {
+      // First get promoted sellers
+      const { data: promotedUsers, error: rolesError } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("promoted", true);
+
+      if (rolesError) throw rolesError;
+
+      const promotedUserIds = promotedUsers?.map(u => u.user_id) || [];
+
+      if (promotedUserIds.length === 0) return [];
+
+      // Get products only from promoted sellers
       const { data: productsData, error } = await supabase
         .from("products")
         .select(`
           *,
           profiles:seller_id (full_name, phone_number)
         `)
-        .limit(4);
+        .in("seller_id", promotedUserIds);
 
       if (error) throw error;
 
-      const sellerIds = productsData?.map(p => p.seller_id) || [];
-      const { data: userRolesData } = await supabase
-        .from("user_roles")
-        .select("user_id, promoted")
-        .in("user_id", sellerIds);
+      const formatted = productsData?.map((product: any) => ({
+        name: product.title,
+        price: `KES ${product.price}`,
+        description: product.description || "",
+        seller: product.profiles?.full_name || "Unknown Seller",
+        phone: product.profiles?.phone_number || "",
+        image: product.photo_url || "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&q=80",
+        promoted: true,
+      })) || [];
 
-      const formatted = productsData?.map((product: any) => {
-        const userRole = userRolesData?.find(ur => ur.user_id === product.seller_id);
-        return {
-          name: product.title,
-          price: `KES ${product.price}`,
-          description: product.description || "",
-          seller: product.profiles?.full_name || "Unknown Seller",
-          phone: product.profiles?.phone_number || "",
-          image: product.photo_url || "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&q=80",
-          promoted: userRole?.promoted || false,
-        };
-      }) || [];
-
-      return formatted.sort((a: any, b: any) => (a.promoted === b.promoted ? 0 : a.promoted ? -1 : 1));
+      return formatted;
     },
     staleTime: 0,
   });
@@ -62,63 +66,72 @@ const Index = () => {
   const { data: services = [], isLoading: servicesLoading } = useQuery({
     queryKey: ['homepage-services'],
     queryFn: async () => {
+      // First get promoted service providers
+      const { data: promotedUsers, error: rolesError } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("promoted", true);
+
+      if (rolesError) throw rolesError;
+
+      const promotedUserIds = promotedUsers?.map(u => u.user_id) || [];
+
+      if (promotedUserIds.length === 0) return [];
+
+      // Get services only from promoted providers
       const { data: servicesData, error } = await supabase
         .from("services")
         .select("*")
-        .limit(2);
+        .in("provider_id", promotedUserIds);
 
       if (error) throw error;
 
-      const providerIds = servicesData?.map(s => s.provider_id) || [];
-      const { data: userRolesData } = await supabase
-        .from("user_roles")
-        .select("user_id, promoted")
-        .in("user_id", providerIds);
-
-      const servicesWithPromoted = (servicesData || []).map((service: any) => {
-        const userRole = userRolesData?.find(ur => ur.user_id === service.provider_id);
-        return { ...service, promoted: userRole?.promoted || false };
-      });
-
-      return servicesWithPromoted.sort((a: any, b: any) => (a.promoted === b.promoted ? 0 : a.promoted ? -1 : 1));
+      return (servicesData || []).map((service: any) => ({
+        ...service,
+        promoted: true,
+      }));
     },
-    staleTime: 30000,
+    staleTime: 0,
   });
 
   const { data: houses = [], isLoading: housesLoading } = useQuery({
     queryKey: ['homepage-houses'],
     queryFn: async () => {
+      // First get promoted landlords
+      const { data: promotedUsers, error: rolesError } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("promoted", true);
+
+      if (rolesError) throw rolesError;
+
+      const promotedUserIds = promotedUsers?.map(u => u.user_id) || [];
+
+      if (promotedUserIds.length === 0) return [];
+
+      // Get houses only from promoted landlords
       const { data: housesData, error } = await supabase
         .from("houses")
         .select("*")
-        .limit(2);
+        .in("landlord_id", promotedUserIds);
 
       if (error) throw error;
 
-      const landlordIds = housesData?.map(h => h.landlord_id) || [];
-      const { data: userRolesData } = await supabase
-        .from("user_roles")
-        .select("user_id, promoted")
-        .in("user_id", landlordIds);
+      const formatted = housesData?.map((house: any) => ({
+        name: house.title,
+        price: `KSh ${house.rent}`,
+        location: house.location,
+        type: house.house_type,
+        hasWater: house.water === "yes",
+        hasWifi: house.wifi === "yes",
+        phone: house.contact_number || "",
+        image: house.photo_url || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
+        promoted: true,
+      })) || [];
 
-      const formatted = housesData?.map((house: any) => {
-        const userRole = userRolesData?.find(ur => ur.user_id === house.landlord_id);
-        return {
-          name: house.title,
-          price: `KSh ${house.rent}`,
-          location: house.location,
-          type: house.house_type,
-          hasWater: house.water === "yes",
-          hasWifi: house.wifi === "yes",
-          phone: house.contact_number || "",
-          image: house.photo_url || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
-          promoted: userRole?.promoted || false,
-        };
-      }) || [];
-
-      return formatted.sort((a: any, b: any) => (a.promoted === b.promoted ? 0 : a.promoted ? -1 : 1));
+      return formatted;
     },
-    staleTime: 30000,
+    staleTime: 0,
   });
 
   const extractPrice = (priceStr: string | number) => {
