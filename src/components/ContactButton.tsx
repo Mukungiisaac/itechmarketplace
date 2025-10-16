@@ -99,7 +99,7 @@ const ContactButton = () => {
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[90vw] max-w-md max-h-[85vh] overflow-y-auto rounded-lg">
           <DialogHeader>
             <DialogTitle>Advertise With Us</DialogTitle>
             <DialogDescription>
@@ -113,7 +113,7 @@ const ContactButton = () => {
                 id="full_name"
                 value={formData.full_name}
                 onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                placeholder="John Doe"
+                placeholder="Isaac Mukungi"
                 required
               />
             </div>
