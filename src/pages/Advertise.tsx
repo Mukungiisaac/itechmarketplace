@@ -83,6 +83,7 @@ const Advertise = () => {
       toast({
         title: "Success",
         description: "Registration successful! You can now advertise your properties or products.",
+        variant: "success",
       });
 
       if (formData.role === "seller") {

@@ -170,6 +170,7 @@ const AdminDashboard = () => {
       toast({
         title: "Success",
         description: "Submission deleted successfully.",
+        variant: "success",
       });
 
       fetchSubmissions();
@@ -218,6 +219,7 @@ const AdminDashboard = () => {
       toast({
         title: "Success",
         description: "User approved successfully.",
+        variant: "success",
       });
 
       fetchUsers();
@@ -246,6 +248,7 @@ const AdminDashboard = () => {
       toast({
         title: "Success",
         description: "User approval revoked.",
+        variant: "success",
       });
 
       fetchUsers();
@@ -276,6 +279,7 @@ const AdminDashboard = () => {
       toast({
         title: "Success",
         description: "User promoted successfully. Their items will appear first on the home page.",
+        variant: "success",
       });
 
       fetchUsers();
@@ -304,6 +308,7 @@ const AdminDashboard = () => {
       toast({
         title: "Success",
         description: "Promotion removed.",
+        variant: "success",
       });
 
       fetchUsers();
@@ -350,6 +355,7 @@ const AdminDashboard = () => {
       toast({
         title: "Success",
         description: `${userName} has been deleted along with their posts.`,
+        variant: "success",
       });
 
       fetchUsers();

@@ -121,7 +121,8 @@ const ServiceProviderDashboard = () => {
     } else {
       toast({
         title: "Success",
-        description: editingId ? "Service updated successfully!" : "Service posted successfully!"
+        description: editingId ? "Service updated successfully!" : "Service posted successfully!",
+        variant: "success"
       });
       setFormData({
         title: "",
@@ -178,7 +179,8 @@ const ServiceProviderDashboard = () => {
     } else {
       toast({
         title: "Success",
-        description: "Service deleted successfully!"
+        description: "Service deleted successfully!",
+        variant: "success"
       });
       fetchServices();
     }

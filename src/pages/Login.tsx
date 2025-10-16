@@ -85,7 +85,8 @@ const Login = () => {
 
         toast({
           title: "Success",
-          description: "Logged in successfully!"
+          description: "Logged in successfully!",
+          variant: "success"
         });
 
         if (roles.role === "admin") {

@@ -50,6 +50,7 @@ const ResetPassword = () => {
       toast({
         title: "Success",
         description: "Your password has been reset successfully!",
+        variant: "success",
       });
 
       navigate("/login");

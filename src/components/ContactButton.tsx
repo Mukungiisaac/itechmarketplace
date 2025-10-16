@@ -59,6 +59,7 @@ const ContactButton = () => {
       toast({
         title: "Submission Successful!",
         description: "Our admin team will contact you soon.",
+        variant: "success",
       });
 
       setFormData({

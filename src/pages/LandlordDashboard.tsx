@@ -109,7 +109,8 @@ const LandlordDashboard = () => {
       } else {
         toast({
           title: "Success",
-          description: "House updated successfully!"
+          description: "House updated successfully!",
+          variant: "success"
         });
         setEditingId(null);
         setFormData({
@@ -150,7 +151,8 @@ const LandlordDashboard = () => {
       } else {
         toast({
           title: "Success",
-          description: "House posted successfully!"
+          description: "House posted successfully!",
+          variant: "success"
         });
         setFormData({
           title: "",
@@ -216,7 +218,8 @@ const LandlordDashboard = () => {
     } else {
       toast({
         title: "Success",
-        description: "House deleted successfully!"
+        description: "House deleted successfully!",
+        variant: "success"
       });
       fetchHouses();
     }

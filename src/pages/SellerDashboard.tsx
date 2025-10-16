@@ -142,6 +142,7 @@ const SellerDashboard = () => {
       toast({
         title: "Success",
         description: "Profile updated successfully!",
+        variant: "success",
       });
     } catch (error: any) {
       toast({
@@ -185,14 +186,14 @@ const SellerDashboard = () => {
           .eq("id", editingProduct.id);
 
         if (error) throw error;
-        toast({ title: "Success", description: "Product updated successfully!" });
+        toast({ title: "Success", description: "Product updated successfully!", variant: "success" });
       } else {
         const { error } = await supabase
           .from("products")
           .insert([productData]);
 
         if (error) throw error;
-        toast({ title: "Success", description: "Product posted successfully!" });
+        toast({ title: "Success", description: "Product posted successfully!", variant: "success" });
       }
 
       setFormData({ title: "", description: "", price: "", photo_url: "" });
@@ -229,7 +230,7 @@ const SellerDashboard = () => {
         .eq("id", id);
 
       if (error) throw error;
-      toast({ title: "Success", description: "Product deleted successfully!" });
+      toast({ title: "Success", description: "Product deleted successfully!", variant: "success" });
       fetchProducts();
     } catch (error: any) {
       toast({
