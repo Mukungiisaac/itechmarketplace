@@ -18,7 +18,16 @@ const Login = () => {
 
   useEffect(() => {
     checkUser();
+    setupAdminIfNeeded();
   }, []);
+
+  const setupAdminIfNeeded = async () => {
+    try {
+      await supabase.functions.invoke('setup-admin');
+    } catch (error) {
+      // Silent fail - admin might already exist
+    }
+  };
 
   const checkUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
