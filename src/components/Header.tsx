@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Home, Package, Building2, Megaphone, LogIn, LayoutDashboard, Wrench, Menu, X, MessageCircle } from "lucide-react";
+import { Home, Package, Building2, Megaphone, LogIn, LayoutDashboard, Wrench, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
@@ -68,12 +68,6 @@ const Header = () => {
             <Link to="/services" className="gap-2 group">
               <Wrench className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
               Services
-            </Link>
-          </Button>
-          <Button variant="ghost" size="sm" asChild className="transition-all duration-300 hover:scale-105">
-            <Link to="/chat" className="gap-2 group">
-              <MessageCircle className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
-              Live Chat
             </Link>
           </Button>
           <Button variant="ghost" size="sm" asChild className="transition-all duration-300 hover:scale-105">
@@ -147,12 +141,6 @@ const Header = () => {
                   <Link to="/services" onClick={() => setIsOpen(false)}>
                     <Wrench className="h-5 w-5" />
                     Services
-                  </Link>
-                </Button>
-                <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
-                  <Link to="/chat" onClick={() => setIsOpen(false)}>
-                    <MessageCircle className="h-5 w-5" />
-                    Live Chat
                   </Link>
                 </Button>
                 <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
