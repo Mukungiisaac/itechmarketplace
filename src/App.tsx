@@ -18,6 +18,7 @@ import SellerDashboard from "./pages/SellerDashboard";
 import LandlordDashboard from "./pages/LandlordDashboard";
 import ServiceProviderDashboard from "./pages/ServiceProviderDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import SetupAdmin from "./pages/SetupAdmin";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 import ContactButton from "./components/ContactButton";
@@ -53,6 +54,7 @@ const App = () => (
           <Route path="/landlord-dashboard" element={<LandlordDashboard />} />
           <Route path="/service-provider-dashboard" element={<ServiceProviderDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/setup-admin" element={<SetupAdmin />} />
           <Route path="/install" element={<Install />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
