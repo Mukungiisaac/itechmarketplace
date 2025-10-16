@@ -35,12 +35,12 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 animate-fade-in-down">
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
         <Link to="/" className="flex items-center gap-2 font-bold text-xl group">
-          <div className="relative rounded-full p-[2px] bg-gradient-primary transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12">
-            <div className="rounded-full bg-white p-1 flex items-center justify-center">
+          <div className="relative rounded-full p-[2px] bg-gradient-primary transition-transform duration-300 group-hover:scale-110 animate-spin-slow">
+            <div className="rounded-full bg-white p-1 flex items-center justify-center pulse-glow">
               <img src={logoImage} alt="iTech Studio" className="h-7 w-7 object-contain" />
             </div>
           </div>
-          <span className="bg-gradient-primary bg-clip-text text-transparent transition-all duration-300 group-hover:tracking-wide">iTechMarketplace</span>
+          <span className="gradient-text-animate font-extrabold transition-all duration-300 group-hover:tracking-wide">iTechMarketplace</span>
         </Link>
         
         {/* Desktop Navigation */}

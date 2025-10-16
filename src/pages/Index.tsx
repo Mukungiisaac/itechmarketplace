@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import FilterSidebar from "@/components/FilterSidebar";
 import ProductCard from "@/components/ProductCard";
 import HouseCard from "@/components/HouseCard";
+import AnimatedBackground from "@/components/AnimatedBackground";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Phone } from "lucide-react";
@@ -191,7 +192,8 @@ const Index = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      <AnimatedBackground />
       <Header />
       
       <div className="container px-4 md:px-6 py-8">
