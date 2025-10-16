@@ -158,6 +158,30 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleDeleteSubmission = async (submissionId: string) => {
+    try {
+      const { error } = await supabase
+        .from("contact_submissions")
+        .delete()
+        .eq("id", submissionId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Submission deleted successfully.",
+      });
+
+      fetchSubmissions();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const fetchSubmissions = async () => {
     try {
       const { data, error } = await supabase
@@ -606,7 +630,7 @@ const AdminDashboard = () => {
                         <Card key={submission.id} className={submission.status === 'pending' ? 'border-primary' : ''}>
                           <CardHeader>
                             <div className="flex justify-between items-start">
-                              <div>
+                              <div className="flex-1">
                                 <CardTitle className="text-lg">{submission.full_name}</CardTitle>
                                 <CardDescription className="flex items-center gap-4 mt-2">
                                   <a href={`tel:${submission.phone_number}`} className="flex items-center gap-1 hover:text-primary">
@@ -618,11 +642,37 @@ const AdminDashboard = () => {
                                   </span>
                                 </CardDescription>
                               </div>
-                              {submission.status === 'pending' && (
-                                <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
-                                  New
-                                </span>
-                              )}
+                              <div className="flex items-center gap-2">
+                                {submission.status === 'pending' && (
+                                  <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
+                                    New
+                                  </span>
+                                )}
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button size="sm" variant="destructive">
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Delete Submission?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        This will permanently delete this inquiry from {submission.full_name}. This action cannot be undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => handleDeleteSubmission(submission.id)}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                      >
+                                        Delete
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
                             </div>
                           </CardHeader>
                           <CardContent className="space-y-3">
