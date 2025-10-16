@@ -16,7 +16,7 @@ const ProductDetail = () => {
 
   const handleWhatsApp = () => {
     const phoneNumber = product.phone.replace(/^0/, "254").replace(/\+/, "").replace(/\s/g, "");
-    const message = encodeURIComponent(`Hi, I'm interested in ${product.name} for ${product.price}`);
+    const message = encodeURIComponent(`Hi, I'm interested in ${product.name} for ${product.price}\n\nView image: ${product.image}`);
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
   };
 
