@@ -20,6 +20,7 @@ import ServiceProviderDashboard from "./pages/ServiceProviderDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import SetupAdmin from "./pages/SetupAdmin";
 import Install from "./pages/Install";
+import ChatRoom from "./pages/ChatRoom";
 import NotFound from "./pages/NotFound";
 import ContactButton from "./components/ContactButton";
 
@@ -56,6 +57,7 @@ const App = () => (
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/setup-admin" element={<SetupAdmin />} />
           <Route path="/install" element={<Install />} />
+          <Route path="/chat" element={<ChatRoom />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
