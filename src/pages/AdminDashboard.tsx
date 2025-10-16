@@ -601,14 +601,18 @@ const AdminDashboard = () => {
           </div>
 
           <Tabs defaultValue="sellers" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-8">
-              <TabsTrigger value="notifications">
-                <Bell className="h-4 w-4 mr-2" />
-                Notifications ({submissions.filter(s => s.status === 'pending').length})
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 mb-8 h-auto">
+              <TabsTrigger value="notifications" className="text-xs sm:text-sm px-2 py-2">
+                <Bell className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Notifications ({submissions.filter(s => s.status === 'pending').length})</span>
+                <span className="sm:hidden">({submissions.filter(s => s.status === 'pending').length})</span>
               </TabsTrigger>
-              <TabsTrigger value="sellers">Sellers</TabsTrigger>
-              <TabsTrigger value="landlords">Landlords</TabsTrigger>
-              <TabsTrigger value="service-providers">Service Providers</TabsTrigger>
+              <TabsTrigger value="sellers" className="text-xs sm:text-sm px-2 py-2">Sellers</TabsTrigger>
+              <TabsTrigger value="landlords" className="text-xs sm:text-sm px-2 py-2">Landlords</TabsTrigger>
+              <TabsTrigger value="service-providers" className="text-xs sm:text-sm px-2 py-2">
+                <span className="hidden sm:inline">Service Providers</span>
+                <span className="sm:hidden">Services</span>
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="notifications">
@@ -629,10 +633,43 @@ const AdminDashboard = () => {
                       {submissions.map((submission) => (
                         <Card key={submission.id} className={submission.status === 'pending' ? 'border-primary' : ''}>
                           <CardHeader>
-                            <div className="flex justify-between items-start">
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
                               <div className="flex-1">
-                                <CardTitle className="text-lg">{submission.full_name}</CardTitle>
-                                <CardDescription className="flex items-center gap-4 mt-2">
+                                <div className="flex items-start justify-between gap-2">
+                                  <CardTitle className="text-lg">{submission.full_name}</CardTitle>
+                                  <div className="flex items-center gap-2 sm:hidden">
+                                    {submission.status === 'pending' && (
+                                      <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded whitespace-nowrap">
+                                        New
+                                      </span>
+                                    )}
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button size="sm" variant="destructive">
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Delete Submission?</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            This will permanently delete this inquiry from {submission.full_name}. This action cannot be undone.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                          <AlertDialogAction
+                                            onClick={() => handleDeleteSubmission(submission.id)}
+                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                          >
+                                            Delete
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
+                                  </div>
+                                </div>
+                                <CardDescription className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2">
                                   <a href={`tel:${submission.phone_number}`} className="flex items-center gap-1 hover:text-primary">
                                     <Phone className="h-4 w-4" />
                                     {submission.phone_number}
@@ -642,7 +679,7 @@ const AdminDashboard = () => {
                                   </span>
                                 </CardDescription>
                               </div>
-                              <div className="flex items-center gap-2">
+                              <div className="hidden sm:flex items-center gap-2">
                                 {submission.status === 'pending' && (
                                   <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
                                     New
