@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_submissions: {
+        Row: {
+          additional_details: string | null
+          created_at: string
+          full_name: string
+          id: string
+          phone_number: string
+          products_or_services: string
+          status: string
+          what_to_advertise: string
+        }
+        Insert: {
+          additional_details?: string | null
+          created_at?: string
+          full_name: string
+          id?: string
+          phone_number: string
+          products_or_services: string
+          status?: string
+          what_to_advertise: string
+        }
+        Update: {
+          additional_details?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          phone_number?: string
+          products_or_services?: string
+          status?: string
+          what_to_advertise?: string
+        }
+        Relationships: []
+      }
       houses: {
         Row: {
           contact_number: string

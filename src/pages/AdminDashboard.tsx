@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { LogOut, CheckCircle, XCircle, Star, StarOff, Trash2 } from "lucide-react";
+import { LogOut, CheckCircle, XCircle, Star, StarOff, Trash2, Bell, Phone, Mail } from "lucide-react";
 import Header from "@/components/Header";
 import {
   AlertDialog,
@@ -35,16 +35,29 @@ interface UserRole {
   };
 }
 
+interface ContactSubmission {
+  id: string;
+  full_name: string;
+  phone_number: string;
+  what_to_advertise: string;
+  products_or_services: string;
+  additional_details: string | null;
+  created_at: string;
+  status: string;
+}
+
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [sellers, setSellers] = useState<UserRole[]>([]);
   const [landlords, setLandlords] = useState<UserRole[]>([]);
   const [serviceProviders, setServiceProviders] = useState<UserRole[]>([]);
+  const [submissions, setSubmissions] = useState<ContactSubmission[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     checkAdminAccess();
     fetchUsers();
+    fetchSubmissions();
   }, []);
 
   const checkAdminAccess = async () => {
@@ -142,6 +155,24 @@ const AdminDashboard = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSubmissions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("contact_submissions")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setSubmissions(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
@@ -546,11 +577,78 @@ const AdminDashboard = () => {
           </div>
 
           <Tabs defaultValue="sellers" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8">
+            <TabsList className="grid w-full grid-cols-4 mb-8">
+              <TabsTrigger value="notifications">
+                <Bell className="h-4 w-4 mr-2" />
+                Notifications ({submissions.filter(s => s.status === 'pending').length})
+              </TabsTrigger>
               <TabsTrigger value="sellers">Sellers</TabsTrigger>
               <TabsTrigger value="landlords">Landlords</TabsTrigger>
               <TabsTrigger value="service-providers">Service Providers</TabsTrigger>
             </TabsList>
+
+            <TabsContent value="notifications">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Advertiser Inquiries</CardTitle>
+                  <CardDescription>
+                    Review contact submissions from potential advertisers
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {submissions.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-4">
+                      No submissions yet
+                    </p>
+                  ) : (
+                    <div className="space-y-4">
+                      {submissions.map((submission) => (
+                        <Card key={submission.id} className={submission.status === 'pending' ? 'border-primary' : ''}>
+                          <CardHeader>
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <CardTitle className="text-lg">{submission.full_name}</CardTitle>
+                                <CardDescription className="flex items-center gap-4 mt-2">
+                                  <a href={`tel:${submission.phone_number}`} className="flex items-center gap-1 hover:text-primary">
+                                    <Phone className="h-4 w-4" />
+                                    {submission.phone_number}
+                                  </a>
+                                  <span className="text-xs">
+                                    {new Date(submission.created_at).toLocaleString()}
+                                  </span>
+                                </CardDescription>
+                              </div>
+                              {submission.status === 'pending' && (
+                                <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
+                                  New
+                                </span>
+                              )}
+                            </div>
+                          </CardHeader>
+                          <CardContent className="space-y-3">
+                            <div>
+                              <h4 className="font-semibold text-sm mb-1">What to Advertise:</h4>
+                              <p className="text-sm text-muted-foreground">{submission.what_to_advertise}</p>
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-sm mb-1">Products/Services:</h4>
+                              <p className="text-sm text-muted-foreground">{submission.products_or_services}</p>
+                            </div>
+                            {submission.additional_details && (
+                              <div>
+                                <h4 className="font-semibold text-sm mb-1">Additional Details:</h4>
+                                <p className="text-sm text-muted-foreground">{submission.additional_details}</p>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
 
             <TabsContent value="sellers">
               {renderUserTable(sellers, "Sellers")}
