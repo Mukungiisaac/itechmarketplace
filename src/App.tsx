@@ -3,7 +3,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ContactButton from "./components/ContactButton";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import Houses from "./pages/Houses";
@@ -20,6 +19,7 @@ import ServiceProviderDashboard from "./pages/ServiceProviderDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
+import ContactButton from "./components/ContactButton";
 
 // Create QueryClient outside component to prevent recreation on every render
 const queryClient = new QueryClient({
