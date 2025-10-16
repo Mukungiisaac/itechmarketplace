@@ -35,8 +35,9 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 animate-fade-in-down">
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
         <Link to="/" className="flex items-center gap-2 font-bold text-xl group">
-          <div className="relative rounded-full p-[2px] bg-gradient-primary transition-transform duration-300 group-hover:scale-110 animate-spin-slow">
-            <div className="rounded-full bg-white p-1 flex items-center justify-center pulse-glow">
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full p-[2px] bg-gradient-primary animate-spin-slow" />
+            <div className="relative rounded-full bg-white p-1 flex items-center justify-center pulse-glow transition-transform duration-300 group-hover:scale-110">
               <img src={logoImage} alt="iTech Studio" className="h-7 w-7 object-contain" />
             </div>
           </div>
