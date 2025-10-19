@@ -217,37 +217,6 @@ const Index = () => {
               />
             </div>
 
-            {/* Available Houses */}
-            <section className="space-y-6 animate-fade-in">
-              <div>
-                <h2 className="text-3xl font-bold tracking-tight">Available Houses</h2>
-                <p className="text-muted-foreground mt-1">Browse our collection of quality homes</p>
-              </div>
-              {housesLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {[1, 2].map((i) => (
-                    <Card key={i} className="overflow-hidden">
-                      <Skeleton className="aspect-video w-full" />
-                      <CardHeader>
-                        <Skeleton className="h-6 w-3/4" />
-                        <Skeleton className="h-4 w-full mt-2" />
-                      </CardHeader>
-                    </Card>
-                  ))}
-                </div>
-              ) : filteredHouses.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground">No houses found</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {filteredHouses.map((house, index) => (
-                    <HouseCard key={index} {...house} />
-                  ))}
-                </div>
-              )}
-            </section>
-
             {/* Marketplace Items */}
             <section className="space-y-6 animate-fade-in">
               <div>
@@ -336,6 +305,37 @@ const Index = () => {
                         </div>
                       </CardContent>
                     </Card>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* Available Houses */}
+            <section className="space-y-6 animate-fade-in">
+              <div>
+                <h2 className="text-3xl font-bold tracking-tight">Available Houses</h2>
+                <p className="text-muted-foreground mt-1">Browse our collection of quality homes</p>
+              </div>
+              {housesLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {[1, 2].map((i) => (
+                    <Card key={i} className="overflow-hidden">
+                      <Skeleton className="aspect-video w-full" />
+                      <CardHeader>
+                        <Skeleton className="h-6 w-3/4" />
+                        <Skeleton className="h-4 w-full mt-2" />
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
+              ) : filteredHouses.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">No houses found</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {filteredHouses.map((house, index) => (
+                    <HouseCard key={index} {...house} />
                   ))}
                 </div>
               )}
