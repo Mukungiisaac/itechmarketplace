@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Wifi, Droplet, Phone } from "lucide-react";
+import { Wifi, Droplet, Phone, Heart } from "lucide-react";
 
 interface HouseCardProps {
   name: string;
@@ -26,15 +27,29 @@ const HouseCard = ({
   image,
 }: HouseCardProps) => {
   const navigate = useNavigate();
+  const [isLiked, setIsLiked] = useState(false);
 
   const handleViewDetails = () => {
     navigate("/house-detail", { state: { name, price, location, type, hasWater, hasWifi, phone, image } });
+  };
+
+  const handleLike = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsLiked(!isLiked);
   };
 
   return (
     <Card className="group overflow-hidden transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1 animate-fade-in-up">
       <div className="aspect-[4/3] overflow-hidden bg-muted relative">
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-2 right-2 z-20 bg-background/80 hover:bg-background transition-colors"
+          onClick={handleLike}
+        >
+          <Heart className={`h-5 w-5 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
+        </Button>
         <img
           src={image}
           alt={name}

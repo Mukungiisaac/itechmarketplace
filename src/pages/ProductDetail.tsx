@@ -1,7 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Phone, User } from "lucide-react";
+import { ArrowLeft, Phone, User, Facebook, Share2, Link as LinkIcon } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 
 const ProductDetail = () => {
@@ -18,6 +19,37 @@ const ProductDetail = () => {
     const phoneNumber = product.phone.replace(/^0/, "254").replace(/\+/, "").replace(/\s/g, "");
     const message = encodeURIComponent(`Hi, I'm interested in ${product.name} for ${product.price}`);
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+  };
+
+  const currentUrl = window.location.href;
+  const shareText = `Check out ${product.name} for ${product.price}`;
+
+  const handleShareFacebook = () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`, "_blank");
+  };
+
+  const handleShareX = () => {
+    window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(shareText)}`, "_blank");
+  };
+
+  const handleShareWhatsApp = () => {
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${shareText} ${currentUrl}`)}`, "_blank");
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(currentUrl);
+      toast({
+        title: "Link copied!",
+        description: "Product link has been copied to clipboard",
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to copy",
+        description: "Could not copy link to clipboard",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -75,7 +107,50 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              <div className="pt-4 space-y-3">
+              <div className="pt-4 space-y-4">
+                <div className="space-y-3">
+                  <p className="font-medium flex items-center gap-2">
+                    <Share2 className="h-4 w-4" />
+                    Share this product
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleShareFacebook}
+                      title="Share on Facebook"
+                    >
+                      <Facebook className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleShareX}
+                      title="Share on X"
+                    >
+                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                      </svg>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleShareWhatsApp}
+                      title="Share on WhatsApp"
+                    >
+                      <Phone className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleCopyLink}
+                      title="Copy link"
+                    >
+                      <LinkIcon className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
                 <Button 
                   onClick={handleWhatsApp} 
                   className="w-full gap-2"
