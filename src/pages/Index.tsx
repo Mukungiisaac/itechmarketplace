@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import FilterSidebar from "@/components/FilterSidebar";
 import ProductCard from "@/components/ProductCard";
 import HouseCard from "@/components/HouseCard";
+import ServiceCard from "@/components/ServiceCard";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -273,38 +274,17 @@ const Index = () => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {filteredServices.map((service) => (
-                    <Card key={service.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                      {service.photo_url && (
-                        <div className="aspect-video overflow-hidden">
-                          <img
-                            src={service.photo_url}
-                            alt={service.title}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
-                      <CardHeader>
-                        <div className="flex items-start justify-between gap-2">
-                          <CardTitle className="text-xl">{service.title}</CardTitle>
-                          <Badge variant="secondary">{service.category}</Badge>
-                        </div>
-                        <CardDescription className="line-clamp-2">
-                          {service.description}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-2xl font-bold text-primary">
-                            KES {service.price}
-                          </span>
-                          <Badge variant="outline">{service.availability}</Badge>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Phone className="h-4 w-4" />
-                          <span>{service.contact_number}</span>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <ServiceCard
+                      key={service.id}
+                      id={service.id}
+                      title={service.title}
+                      price={service.price}
+                      description={service.description || ""}
+                      category={service.category}
+                      availability={service.availability}
+                      contactNumber={service.contact_number}
+                      photoUrl={service.photo_url || ""}
+                    />
                   ))}
                 </div>
               )}
