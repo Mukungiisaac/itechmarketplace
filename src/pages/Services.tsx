@@ -4,9 +4,8 @@ import { Input } from "@/components/ui/input";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FilterSidebar from "@/components/FilterSidebar";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import ServiceCard from "@/components/ServiceCard";
+import { Card, CardHeader } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
@@ -95,33 +94,17 @@ const Services = () => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {filteredServices.map((service) => (
-                    <Card key={service.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                      <div className="aspect-video relative overflow-hidden bg-muted">
-                        <img
-                          src={service.photo_url || "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&q=80"}
-                          alt={service.title}
-                          className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <CardHeader>
-                        <div className="flex justify-between items-start mb-2">
-                          <Badge variant="secondary">{service.category}</Badge>
-                          <span className="text-lg font-bold text-primary">KSh {service.price}</span>
-                        </div>
-                        <CardTitle className="line-clamp-1">{service.title}</CardTitle>
-                        <CardDescription className="line-clamp-2">{service.description}</CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-2">
-                        <p className="text-sm text-muted-foreground">
-                          <span className="font-medium">Availability:</span> {service.availability}
-                        </p>
-                      </CardContent>
-                      <CardFooter>
-                        <Button className="w-full" asChild>
-                          <a href={`tel:${service.contact_number}`}>Contact: {service.contact_number}</a>
-                        </Button>
-                      </CardFooter>
-                    </Card>
+                    <ServiceCard
+                      key={service.id}
+                      id={service.id}
+                      title={service.title}
+                      price={service.price}
+                      description={service.description || ""}
+                      category={service.category}
+                      availability={service.availability}
+                      contactNumber={service.contact_number}
+                      photoUrl={service.photo_url || ""}
+                    />
                   ))}
                 </div>
               )}

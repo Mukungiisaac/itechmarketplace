@@ -10,6 +10,7 @@ import Houses from "./pages/Houses";
 import Services from "./pages/Services";
 import HouseDetail from "./pages/HouseDetail";
 import ProductDetail from "./pages/ProductDetail";
+import ServiceDetail from "./pages/ServiceDetail";
 import Advertise from "./pages/Advertise";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -45,6 +46,7 @@ const App = () => (
           <Route path="/products" element={<Products />} />
           <Route path="/houses" element={<Houses />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/service-detail" element={<ServiceDetail />} />
           <Route path="/house-detail" element={<HouseDetail />} />
           <Route path="/product-detail" element={<ProductDetail />} />
           <Route path="/advertise" element={<Advertise />} />
