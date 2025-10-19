@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,13 @@ const ServiceCard = ({
   photoUrl,
 }: ServiceCardProps) => {
   const navigate = useNavigate();
+  const likeKey = `like_service_${id}`;
   const [isLiked, setIsLiked] = useState(false);
+
+  useEffect(() => {
+    const liked = localStorage.getItem(likeKey) === 'true';
+    setIsLiked(liked);
+  }, [likeKey]);
 
   const handleViewDetails = () => {
     navigate("/service-detail", { 
@@ -37,7 +43,9 @@ const ServiceCard = ({
 
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsLiked(!isLiked);
+    const newLikedState = !isLiked;
+    setIsLiked(newLikedState);
+    localStorage.setItem(likeKey, String(newLikedState));
   };
 
   return (

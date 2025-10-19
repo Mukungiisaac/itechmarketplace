@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,13 @@ const ProductCard = ({
   image,
 }: ProductCardProps) => {
   const navigate = useNavigate();
+  const likeKey = `like_product_${name}_${seller}`;
   const [isLiked, setIsLiked] = useState(false);
+
+  useEffect(() => {
+    const liked = localStorage.getItem(likeKey) === 'true';
+    setIsLiked(liked);
+  }, [likeKey]);
 
   const handleViewDetails = () => {
     navigate("/product-detail", { state: { name, price, description, seller, phone, image } });
@@ -30,7 +36,9 @@ const ProductCard = ({
 
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsLiked(!isLiked);
+    const newLikedState = !isLiked;
+    setIsLiked(newLikedState);
+    localStorage.setItem(likeKey, String(newLikedState));
   };
 
   return (
