@@ -113,6 +113,7 @@ const Services = () => {
                       availability={service.availability}
                       contactNumber={service.contact_number}
                       photoUrl={service.photo_url || ""}
+                      views={service.views || 0}
                     />
                   ))}
                 </div>

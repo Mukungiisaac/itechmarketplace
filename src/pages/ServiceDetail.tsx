@@ -5,11 +5,38 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Phone, Facebook, Share2, Link as LinkIcon } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
 
 const ServiceDetail = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const service = location.state;
+
+  useEffect(() => {
+    if (service?.id) {
+      incrementViews();
+    }
+  }, [service?.id]);
+
+  const incrementViews = async () => {
+    try {
+      const { data: currentService } = await supabase
+        .from("services")
+        .select("views")
+        .eq("id", service.id)
+        .single();
+
+      if (currentService) {
+        await supabase
+          .from("services")
+          .update({ views: (currentService.views || 0) + 1 })
+          .eq("id", service.id);
+      }
+    } catch (error) {
+      console.error("Error incrementing views:", error);
+    }
+  };
 
   if (!service) {
     navigate("/services");

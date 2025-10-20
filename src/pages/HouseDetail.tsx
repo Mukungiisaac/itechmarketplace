@@ -5,11 +5,38 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, MapPin, Home, Wifi, Droplet, Phone, Facebook, Share2, Link as LinkIcon } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
 
 const HouseDetail = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const house = location.state;
+
+  useEffect(() => {
+    if (house?.id) {
+      incrementViews();
+    }
+  }, [house?.id]);
+
+  const incrementViews = async () => {
+    try {
+      const { data: currentHouse } = await supabase
+        .from("houses")
+        .select("views")
+        .eq("id", house.id)
+        .single();
+
+      if (currentHouse) {
+        await supabase
+          .from("houses")
+          .update({ views: (currentHouse.views || 0) + 1 })
+          .eq("id", house.id);
+      }
+    } catch (error) {
+      console.error("Error incrementing views:", error);
+    }
+  };
 
   if (!house) {
     navigate("/");

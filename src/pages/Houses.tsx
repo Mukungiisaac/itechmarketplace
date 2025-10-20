@@ -23,6 +23,7 @@ interface House {
   contact_number: string;
   photo_url: string | null;
   landlord_id: string;
+  views: number;
 }
 
 const Houses = () => {
@@ -118,6 +119,7 @@ const Houses = () => {
                   {filteredHouses.map((house) => (
                     <HouseCard 
                       key={house.id}
+                      id={house.id}
                       name={house.title}
                       price={`KSh ${house.rent}`}
                       location={house.location}
@@ -126,6 +128,7 @@ const Houses = () => {
                       hasWifi={house.wifi === "yes"}
                       phone={house.contact_number}
                       image={house.photo_url || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80"}
+                      views={house.views || 0}
                     />
                   ))}
                 </div>

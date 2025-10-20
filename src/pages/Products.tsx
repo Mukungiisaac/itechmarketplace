@@ -22,9 +22,10 @@ interface Product {
   id: string;
   title: string;
   description: string | null;
-  price: number;
+  price: string;
   photo_url: string | null;
   seller_id: string;
+  views: number;
   profiles: {
     full_name: string;
     phone_number: string | null;
@@ -84,9 +85,15 @@ const Products = () => {
     staleTime: 0,
   });
 
+  const extractPrice = (priceStr: string) => {
+    const match = priceStr.match(/\d+/);
+    return match ? parseFloat(match[0]) : 0;
+  };
+
   const filteredProducts = products.filter((product) => {
-    const matchesMinPrice = filters.minPrice === null || product.price >= filters.minPrice;
-    const matchesMaxPrice = filters.maxPrice === null || product.price <= filters.maxPrice;
+    const price = extractPrice(product.price);
+    const matchesMinPrice = filters.minPrice === null || price >= filters.minPrice;
+    const matchesMaxPrice = filters.maxPrice === null || price <= filters.maxPrice;
     const matchesSearch = searchTerm === "" ||
       product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -161,12 +168,14 @@ const Products = () => {
                   {filteredProducts.map((product) => (
                     <ProductCard 
                       key={product.id}
+                      id={product.id}
                       name={product.title}
                       price={`KES ${product.price}`}
                       description={product.description || ""}
                       seller={product.profiles?.full_name || "Unknown"}
                       phone={product.profiles?.phone_number || "N/A"}
                       image={product.photo_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80"}
+                      views={product.views || 0}
                     />
                   ))}
                 </div>

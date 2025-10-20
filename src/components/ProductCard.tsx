@@ -2,24 +2,28 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Phone, Heart } from "lucide-react";
+import { Phone, Heart, Eye } from "lucide-react";
 
 interface ProductCardProps {
+  id?: string;
   name: string;
   price: string;
   description: string;
   seller: string;
   phone: string;
   image: string;
+  views?: number;
 }
 
 const ProductCard = ({
+  id,
   name,
   price,
   description,
   seller,
   phone,
   image,
+  views = 0,
 }: ProductCardProps) => {
   const navigate = useNavigate();
   const likeKey = `like_product_${name}_${seller}`;
@@ -31,7 +35,7 @@ const ProductCard = ({
   }, [likeKey]);
 
   const handleViewDetails = () => {
-    navigate("/product-detail", { state: { name, price, description, seller, phone, image } });
+    navigate("/product-detail", { state: { id, name, price, description, seller, phone, image } });
   };
 
   const handleLike = (e: React.MouseEvent) => {
@@ -67,8 +71,12 @@ const ProductCard = ({
           </p>
         </div>
 
-        <div className="pt-2">
+        <div className="pt-2 flex items-center justify-between">
           <p className="text-2xl font-bold text-primary transition-transform duration-300 group-hover:scale-105 inline-block">{price}</p>
+          <div className="flex items-center gap-1 text-muted-foreground">
+            <Eye className="h-4 w-4" />
+            <span className="text-sm">{views}</span>
+          </div>
         </div>
       </CardContent>
       <CardFooter className="p-5 pt-0 flex-col items-start gap-3">

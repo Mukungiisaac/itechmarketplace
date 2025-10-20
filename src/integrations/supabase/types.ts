@@ -85,6 +85,7 @@ export type Database = {
           rent: string
           title: string
           updated_at: string
+          views: number
           water: string
           wifi: string
         }
@@ -101,6 +102,7 @@ export type Database = {
           rent: string
           title: string
           updated_at?: string
+          views?: number
           water: string
           wifi: string
         }
@@ -117,6 +119,7 @@ export type Database = {
           rent?: string
           title?: string
           updated_at?: string
+          views?: number
           water?: string
           wifi?: string
         }
@@ -140,6 +143,7 @@ export type Database = {
           seller_id: string
           title: string
           updated_at: string
+          views: number
         }
         Insert: {
           created_at?: string
@@ -150,6 +154,7 @@ export type Database = {
           seller_id: string
           title: string
           updated_at?: string
+          views?: number
         }
         Update: {
           created_at?: string
@@ -160,6 +165,7 @@ export type Database = {
           seller_id?: string
           title?: string
           updated_at?: string
+          views?: number
         }
         Relationships: [
           {
@@ -211,6 +217,7 @@ export type Database = {
           provider_id: string
           title: string
           updated_at: string
+          views: number
         }
         Insert: {
           availability: string
@@ -224,6 +231,7 @@ export type Database = {
           provider_id: string
           title: string
           updated_at?: string
+          views?: number
         }
         Update: {
           availability?: string
@@ -237,6 +245,7 @@ export type Database = {
           provider_id?: string
           title?: string
           updated_at?: string
+          views?: number
         }
         Relationships: [
           {

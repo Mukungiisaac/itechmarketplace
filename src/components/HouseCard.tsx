@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Wifi, Droplet, Phone, Heart } from "lucide-react";
+import { Wifi, Droplet, Phone, Heart, Eye } from "lucide-react";
 
 interface HouseCardProps {
+  id?: string;
   name: string;
   price: string;
   location: string;
@@ -14,9 +15,11 @@ interface HouseCardProps {
   hasWifi?: boolean;
   phone: string;
   image: string;
+  views?: number;
 }
 
 const HouseCard = ({
+  id,
   name,
   price,
   location,
@@ -25,6 +28,7 @@ const HouseCard = ({
   hasWifi,
   phone,
   image,
+  views = 0,
 }: HouseCardProps) => {
   const navigate = useNavigate();
   const likeKey = `like_house_${name}_${location}`;
@@ -36,7 +40,7 @@ const HouseCard = ({
   }, [likeKey]);
 
   const handleViewDetails = () => {
-    navigate("/house-detail", { state: { name, price, location, type, hasWater, hasWifi, phone, image } });
+    navigate("/house-detail", { state: { id, name, price, location, type, hasWater, hasWifi, phone, image } });
   };
 
   const handleLike = (e: React.MouseEvent) => {
@@ -92,8 +96,12 @@ const HouseCard = ({
           <span>{phone}</span>
         </div>
 
-        <div className="pt-2">
+        <div className="pt-2 flex items-center justify-between">
           <p className="text-2xl font-bold text-primary transition-transform duration-300 group-hover:scale-105 inline-block">{price}</p>
+          <div className="flex items-center gap-1 text-muted-foreground">
+            <Eye className="h-4 w-4" />
+            <span className="text-sm">{views}</span>
+          </div>
         </div>
       </CardContent>
       <CardFooter className="p-5 pt-0 gap-2">

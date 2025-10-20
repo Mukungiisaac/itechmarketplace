@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { LogOut, CheckCircle, XCircle, Star, StarOff, Trash2, Bell, Phone, Mail } from "lucide-react";
+import { LogOut, CheckCircle, XCircle, Star, StarOff, Trash2, Bell, Phone, Mail, Eye, BarChart3 } from "lucide-react";
 import Header from "@/components/Header";
 import {
   AlertDialog,
@@ -53,11 +53,17 @@ const AdminDashboard = () => {
   const [serviceProviders, setServiceProviders] = useState<UserRole[]>([]);
   const [submissions, setSubmissions] = useState<ContactSubmission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [analytics, setAnalytics] = useState<{
+    products: any[];
+    houses: any[];
+    services: any[];
+  }>({ products: [], houses: [], services: [] });
 
   useEffect(() => {
     checkAdminAccess();
     fetchUsers();
     fetchSubmissions();
+    fetchAnalytics();
   }, []);
 
   const checkAdminAccess = async () => {
@@ -198,6 +204,36 @@ const AdminDashboard = () => {
         description: error.message,
         variant: "destructive",
       });
+    }
+  };
+
+  const fetchAnalytics = async () => {
+    try {
+      const { data: productsData } = await supabase
+        .from("products")
+        .select("id, title, price, photo_url, views")
+        .order("views", { ascending: false })
+        .limit(20);
+
+      const { data: housesData } = await supabase
+        .from("houses")
+        .select("id, title, rent, photo_url, views")
+        .order("views", { ascending: false })
+        .limit(20);
+
+      const { data: servicesData } = await supabase
+        .from("services")
+        .select("id, title, price, photo_url, views")
+        .order("views", { ascending: false })
+        .limit(20);
+
+      setAnalytics({
+        products: productsData || [],
+        houses: housesData || [],
+        services: servicesData || [],
+      });
+    } catch (error: any) {
+      console.error("Error fetching analytics:", error);
     }
   };
 
@@ -607,19 +643,134 @@ const AdminDashboard = () => {
           </div>
 
           <Tabs defaultValue="sellers" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 mb-8 h-auto">
+            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 mb-8 h-auto">
+              <TabsTrigger value="analytics" className="text-xs sm:text-sm px-2 py-2">
+                <BarChart3 className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Analytics</span>
+              </TabsTrigger>
               <TabsTrigger value="notifications" className="text-xs sm:text-sm px-2 py-2">
                 <Bell className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Notifications ({submissions.filter(s => s.status === 'pending').length})</span>
+                <span className="hidden sm:inline">Ads ({submissions.filter(s => s.status === 'pending').length})</span>
                 <span className="sm:hidden">({submissions.filter(s => s.status === 'pending').length})</span>
               </TabsTrigger>
               <TabsTrigger value="sellers" className="text-xs sm:text-sm px-2 py-2">Sellers</TabsTrigger>
               <TabsTrigger value="landlords" className="text-xs sm:text-sm px-2 py-2">Landlords</TabsTrigger>
               <TabsTrigger value="service-providers" className="text-xs sm:text-sm px-2 py-2">
-                <span className="hidden sm:inline">Service Providers</span>
+                <span className="hidden sm:inline">Providers</span>
                 <span className="sm:hidden">Services</span>
               </TabsTrigger>
             </TabsList>
+
+            <TabsContent value="analytics">
+              <Card>
+                <CardHeader>
+                  <CardTitle>View Analytics</CardTitle>
+                  <CardDescription>
+                    Track how many views each post is getting
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <Eye className="h-5 w-5" />
+                      Products
+                    </h3>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Image</TableHead>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Price</TableHead>
+                          <TableHead className="text-right">Views</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {analytics.products.map((product) => (
+                          <TableRow key={product.id}>
+                            <TableCell>
+                              <img 
+                                src={product.photo_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&q=80"} 
+                                alt={product.title}
+                                className="h-12 w-12 object-cover rounded"
+                              />
+                            </TableCell>
+                            <TableCell>{product.title}</TableCell>
+                            <TableCell>KES {product.price}</TableCell>
+                            <TableCell className="text-right font-semibold">{product.views || 0}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <Eye className="h-5 w-5" />
+                      Houses
+                    </h3>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Image</TableHead>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Rent</TableHead>
+                          <TableHead className="text-right">Views</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {analytics.houses.map((house) => (
+                          <TableRow key={house.id}>
+                            <TableCell>
+                              <img 
+                                src={house.photo_url || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=100&q=80"} 
+                                alt={house.title}
+                                className="h-12 w-12 object-cover rounded"
+                              />
+                            </TableCell>
+                            <TableCell>{house.title}</TableCell>
+                            <TableCell>KSh {house.rent}</TableCell>
+                            <TableCell className="text-right font-semibold">{house.views || 0}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <Eye className="h-5 w-5" />
+                      Services
+                    </h3>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Image</TableHead>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Price</TableHead>
+                          <TableHead className="text-right">Views</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {analytics.services.map((service) => (
+                          <TableRow key={service.id}>
+                            <TableCell>
+                              <img 
+                                src={service.photo_url || "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=100&q=80"} 
+                                alt={service.title}
+                                className="h-12 w-12 object-cover rounded"
+                              />
+                            </TableCell>
+                            <TableCell>{service.title}</TableCell>
+                            <TableCell>KSh {service.price}</TableCell>
+                            <TableCell className="text-right font-semibold">{service.views || 0}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
             <TabsContent value="notifications">
               <Card>
