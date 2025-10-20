@@ -6,8 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { LogOut, CheckCircle, XCircle, Star, StarOff, Trash2, Bell, Phone, Mail, Eye, BarChart3 } from "lucide-react";
+import { LogOut, CheckCircle, XCircle, Star, StarOff, Trash2, Bell, Phone, Mail, Eye, BarChart3, Heart, Search } from "lucide-react";
 import Header from "@/components/Header";
+import { Input } from "@/components/ui/input";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,6 +59,7 @@ const AdminDashboard = () => {
     houses: any[];
     services: any[];
   }>({ products: [], houses: [], services: [] });
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     checkAdminAccess();
@@ -211,19 +213,19 @@ const AdminDashboard = () => {
     try {
       const { data: productsData } = await supabase
         .from("products")
-        .select("id, title, price, photo_url, views")
+        .select("id, title, price, photo_url, views, likes")
         .order("views", { ascending: false })
         .limit(20);
 
       const { data: housesData } = await supabase
         .from("houses")
-        .select("id, title, rent, photo_url, views")
+        .select("id, title, rent, photo_url, views, likes")
         .order("views", { ascending: false })
         .limit(20);
 
       const { data: servicesData } = await supabase
         .from("services")
-        .select("id, title, price, photo_url, views")
+        .select("id, title, price, photo_url, views, likes")
         .order("views", { ascending: false })
         .limit(20);
 
@@ -235,6 +237,15 @@ const AdminDashboard = () => {
     } catch (error: any) {
       console.error("Error fetching analytics:", error);
     }
+  };
+
+  const filterAnalytics = (items: any[]) => {
+    if (!searchQuery) return items;
+    return items.filter(item => 
+      item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.price?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.rent?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   };
 
   const handleApprove = async (userId: string, roleId: string) => {
@@ -666,13 +677,23 @@ const AdminDashboard = () => {
                 <CardHeader>
                   <CardTitle>View Analytics</CardTitle>
                   <CardDescription>
-                    Track how many views each post is getting
+                    Track views and likes for each post
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Search className="h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by name or price..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="max-w-sm"
+                    />
+                  </div>
+
                   <div>
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                      <Eye className="h-5 w-5" />
+                      <BarChart3 className="h-5 w-5" />
                       Products
                     </h3>
                     <Table>
@@ -682,10 +703,11 @@ const AdminDashboard = () => {
                           <TableHead>Name</TableHead>
                           <TableHead>Price</TableHead>
                           <TableHead className="text-right">Views</TableHead>
+                          <TableHead className="text-right">Likes</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {analytics.products.map((product) => (
+                        {filterAnalytics(analytics.products).map((product) => (
                           <TableRow key={product.id}>
                             <TableCell>
                               <img 
@@ -696,7 +718,18 @@ const AdminDashboard = () => {
                             </TableCell>
                             <TableCell>{product.title}</TableCell>
                             <TableCell>KES {product.price}</TableCell>
-                            <TableCell className="text-right font-semibold">{product.views || 0}</TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                <Eye className="h-4 w-4 text-muted-foreground" />
+                                <span className="font-semibold">{product.views || 0}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                <Heart className="h-4 w-4 text-red-500" />
+                                <span className="font-semibold">{product.likes || 0}</span>
+                              </div>
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -705,7 +738,7 @@ const AdminDashboard = () => {
 
                   <div>
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                      <Eye className="h-5 w-5" />
+                      <BarChart3 className="h-5 w-5" />
                       Houses
                     </h3>
                     <Table>
@@ -715,10 +748,11 @@ const AdminDashboard = () => {
                           <TableHead>Name</TableHead>
                           <TableHead>Rent</TableHead>
                           <TableHead className="text-right">Views</TableHead>
+                          <TableHead className="text-right">Likes</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {analytics.houses.map((house) => (
+                        {filterAnalytics(analytics.houses).map((house) => (
                           <TableRow key={house.id}>
                             <TableCell>
                               <img 
@@ -729,7 +763,18 @@ const AdminDashboard = () => {
                             </TableCell>
                             <TableCell>{house.title}</TableCell>
                             <TableCell>KSh {house.rent}</TableCell>
-                            <TableCell className="text-right font-semibold">{house.views || 0}</TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                <Eye className="h-4 w-4 text-muted-foreground" />
+                                <span className="font-semibold">{house.views || 0}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                <Heart className="h-4 w-4 text-red-500" />
+                                <span className="font-semibold">{house.likes || 0}</span>
+                              </div>
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -738,7 +783,7 @@ const AdminDashboard = () => {
 
                   <div>
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                      <Eye className="h-5 w-5" />
+                      <BarChart3 className="h-5 w-5" />
                       Services
                     </h3>
                     <Table>
@@ -748,10 +793,11 @@ const AdminDashboard = () => {
                           <TableHead>Name</TableHead>
                           <TableHead>Price</TableHead>
                           <TableHead className="text-right">Views</TableHead>
+                          <TableHead className="text-right">Likes</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {analytics.services.map((service) => (
+                        {filterAnalytics(analytics.services).map((service) => (
                           <TableRow key={service.id}>
                             <TableCell>
                               <img 
@@ -762,7 +808,18 @@ const AdminDashboard = () => {
                             </TableCell>
                             <TableCell>{service.title}</TableCell>
                             <TableCell>KSh {service.price}</TableCell>
-                            <TableCell className="text-right font-semibold">{service.views || 0}</TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                <Eye className="h-4 w-4 text-muted-foreground" />
+                                <span className="font-semibold">{service.views || 0}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                <Heart className="h-4 w-4 text-red-500" />
+                                <span className="font-semibold">{service.likes || 0}</span>
+                              </div>
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>

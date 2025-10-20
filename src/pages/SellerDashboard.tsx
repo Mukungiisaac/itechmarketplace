@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
-import { Pencil, Trash2, User, LogOut, Upload } from "lucide-react";
+import { Pencil, Trash2, User, LogOut, Upload, Eye, Heart } from "lucide-react";
 
 interface Product {
   id: string;
@@ -19,6 +19,8 @@ interface Product {
   price: string;
   photo_url: string | null;
   created_at: string;
+  views: number;
+  likes: number;
 }
 
 const SellerDashboard = () => {
@@ -104,7 +106,7 @@ const SellerDashboard = () => {
 
       const { data, error } = await supabase
         .from("products")
-        .select("*")
+        .select("id, title, description, price, photo_url, created_at, views, likes")
         .eq("seller_id", user.id)
         .order("created_at", { ascending: false });
 
@@ -447,6 +449,16 @@ const SellerDashboard = () => {
                         <h4 className="text-xl font-semibold">{product.title}</h4>
                         <p className="text-muted-foreground mt-1">{product.description}</p>
                         <p className="text-lg font-bold mt-2">KES {product.price}</p>
+                        <div className="flex gap-4 mt-2 text-sm text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <Eye className="h-4 w-4" />
+                            {product.views} views
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Heart className="h-4 w-4" />
+                            {product.likes} likes
+                          </span>
+                        </div>
                       </div>
                       <div className="flex gap-2">
                         <Button

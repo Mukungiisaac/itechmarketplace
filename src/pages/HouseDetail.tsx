@@ -2,20 +2,23 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, MapPin, Home, Wifi, Droplet, Phone, Facebook, Share2, Link as LinkIcon } from "lucide-react";
+import { ArrowLeft, MapPin, Home, Wifi, Droplet, Phone, Facebook, Share2, Link as LinkIcon, Heart } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const HouseDetail = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const house = location.state;
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     if (house?.id) {
       incrementViews();
+      const liked = localStorage.getItem(`like_house_detail_${house.id}`) === 'true';
+      setIsLiked(liked);
     }
   }, [house?.id]);
 
@@ -35,6 +38,29 @@ const HouseDetail = () => {
       }
     } catch (error) {
       console.error("Error incrementing views:", error);
+    }
+  };
+
+  const handleLike = async () => {
+    try {
+      const { data: currentHouse } = await supabase
+        .from("houses")
+        .select("likes")
+        .eq("id", house.id)
+        .single();
+
+      if (currentHouse) {
+        const newLikes = isLiked ? (currentHouse.likes || 0) - 1 : (currentHouse.likes || 0) + 1;
+        await supabase
+          .from("houses")
+          .update({ likes: newLikes })
+          .eq("id", house.id);
+        
+        setIsLiked(!isLiked);
+        localStorage.setItem(`like_house_detail_${house.id}`, String(!isLiked));
+      }
+    } catch (error) {
+      console.error("Error updating likes:", error);
     }
   };
 
@@ -157,6 +183,15 @@ const HouseDetail = () => {
               </div>
 
               <div className="pt-4 space-y-4">
+                <Button
+                  variant="outline"
+                  onClick={handleLike}
+                  className="w-full gap-2"
+                >
+                  <Heart className={`h-4 w-4 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
+                  {isLiked ? 'Unlike' : 'Like'} this House
+                </Button>
+                
                 <div className="space-y-3">
                   <p className="font-medium flex items-center gap-2">
                     <Share2 className="h-4 w-4" />

@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Trash2, Upload, Edit } from "lucide-react";
+import { Trash2, Upload, Edit, Eye, Heart } from "lucide-react";
 
 const ServiceProviderDashboard = () => {
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ const ServiceProviderDashboard = () => {
 
     const { data, error } = await supabase
       .from("services")
-      .select("*")
+      .select("id, title, category, description, price, contact_number, availability, photo_url, created_at, views, likes")
       .eq("provider_id", user.id)
       .order("created_at", { ascending: false });
 
@@ -382,7 +382,17 @@ const ServiceProviderDashboard = () => {
                       <p className="text-sm text-muted-foreground mb-1">Category: {service.category}</p>
                       <p className="text-sm mb-2">{service.description}</p>
                       <p className="text-lg font-bold mb-2">KES {service.price}</p>
-                      <p className="text-sm mb-3">Available: {service.availability}</p>
+                      <p className="text-sm mb-2">Available: {service.availability}</p>
+                      <div className="flex gap-4 mb-3 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Eye className="h-4 w-4" />
+                          {service.views} views
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Heart className="h-4 w-4" />
+                          {service.likes} likes
+                        </span>
+                      </div>
                       <div className="flex gap-2">
                         <Button
                           onClick={() => handleEdit(service)}

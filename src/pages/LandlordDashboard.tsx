@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Trash2, Upload, Edit } from "lucide-react";
+import { Trash2, Upload, Edit, Eye, Heart } from "lucide-react";
 
 const LandlordDashboard = () => {
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ const LandlordDashboard = () => {
 
     const { data, error } = await supabase
       .from("houses")
-      .select("*")
+      .select("id, title, location, rent, deposit, distance, house_type, water, wifi, contact_number, photo_url, created_at, views, likes")
       .eq("landlord_id", user.id)
       .order("created_at", { ascending: false });
 
@@ -451,6 +451,16 @@ const LandlordDashboard = () => {
                       <p className="text-sm text-muted-foreground mb-1">{house.location}</p>
                       <p className="text-sm mb-1">Type: {house.house_type}</p>
                       <p className="text-lg font-bold mb-2">KES {house.rent}/month</p>
+                      <div className="flex gap-4 mb-2 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Eye className="h-4 w-4" />
+                          {house.views} views
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Heart className="h-4 w-4" />
+                          {house.likes} likes
+                        </span>
+                      </div>
                       <div className="flex gap-2">
                         <Button
                           onClick={() => handleEdit(house)}

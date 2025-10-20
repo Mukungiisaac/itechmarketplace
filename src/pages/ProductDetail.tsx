@@ -1,20 +1,23 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Phone, User, Facebook, Share2, Link as LinkIcon } from "lucide-react";
+import { ArrowLeft, Phone, User, Facebook, Share2, Link as LinkIcon, Heart } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const ProductDetail = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const product = location.state;
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     if (product?.id) {
       incrementViews();
+      const liked = localStorage.getItem(`like_product_detail_${product.id}`) === 'true';
+      setIsLiked(liked);
     }
   }, [product?.id]);
 
@@ -34,6 +37,29 @@ const ProductDetail = () => {
       }
     } catch (error) {
       console.error("Error incrementing views:", error);
+    }
+  };
+
+  const handleLike = async () => {
+    try {
+      const { data: currentProduct } = await supabase
+        .from("products")
+        .select("likes")
+        .eq("id", product.id)
+        .single();
+
+      if (currentProduct) {
+        const newLikes = isLiked ? (currentProduct.likes || 0) - 1 : (currentProduct.likes || 0) + 1;
+        await supabase
+          .from("products")
+          .update({ likes: newLikes })
+          .eq("id", product.id);
+        
+        setIsLiked(!isLiked);
+        localStorage.setItem(`like_product_detail_${product.id}`, String(!isLiked));
+      }
+    } catch (error) {
+      console.error("Error updating likes:", error);
     }
   };
 
@@ -135,6 +161,15 @@ const ProductDetail = () => {
               </div>
 
               <div className="pt-4 space-y-4">
+                <Button
+                  variant="outline"
+                  onClick={handleLike}
+                  className="w-full gap-2"
+                >
+                  <Heart className={`h-4 w-4 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
+                  {isLiked ? 'Unlike' : 'Like'} this Product
+                </Button>
+                
                 <div className="space-y-3">
                   <p className="font-medium flex items-center gap-2">
                     <Share2 className="h-4 w-4" />

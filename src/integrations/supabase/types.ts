@@ -80,6 +80,7 @@ export type Database = {
           house_type: string
           id: string
           landlord_id: string
+          likes: number
           location: string
           photo_url: string | null
           rent: string
@@ -97,6 +98,7 @@ export type Database = {
           house_type: string
           id?: string
           landlord_id: string
+          likes?: number
           location: string
           photo_url?: string | null
           rent: string
@@ -114,6 +116,7 @@ export type Database = {
           house_type?: string
           id?: string
           landlord_id?: string
+          likes?: number
           location?: string
           photo_url?: string | null
           rent?: string
@@ -138,6 +141,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          likes: number
           photo_url: string | null
           price: string
           seller_id: string
@@ -149,6 +153,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          likes?: number
           photo_url?: string | null
           price: string
           seller_id: string
@@ -160,6 +165,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          likes?: number
           photo_url?: string | null
           price?: string
           seller_id?: string
@@ -212,6 +218,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          likes: number
           photo_url: string | null
           price: string
           provider_id: string
@@ -226,6 +233,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          likes?: number
           photo_url?: string | null
           price: string
           provider_id: string
@@ -240,6 +248,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          likes?: number
           photo_url?: string | null
           price?: string
           provider_id?: string

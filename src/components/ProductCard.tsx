@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Phone, Heart, Eye } from "lucide-react";
+import { Phone, Heart } from "lucide-react";
 
 interface ProductCardProps {
   id?: string;
@@ -71,12 +71,8 @@ const ProductCard = ({
           </p>
         </div>
 
-        <div className="pt-2 flex items-center justify-between">
+        <div className="pt-2">
           <p className="text-2xl font-bold text-primary transition-transform duration-300 group-hover:scale-105 inline-block">{price}</p>
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <Eye className="h-4 w-4" />
-            <span className="text-sm">{views}</span>
-          </div>
         </div>
       </CardContent>
       <CardFooter className="p-5 pt-0 flex-col items-start gap-3">

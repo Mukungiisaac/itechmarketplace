@@ -175,7 +175,6 @@ const Products = () => {
                       seller={product.profiles?.full_name || "Unknown"}
                       phone={product.profiles?.phone_number || "N/A"}
                       image={product.photo_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80"}
-                      views={product.views || 0}
                     />
                   ))}
                 </div>

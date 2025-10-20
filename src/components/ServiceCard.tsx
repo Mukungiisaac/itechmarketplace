@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Eye } from "lucide-react";
+import { Heart } from "lucide-react";
 
 interface ServiceCardProps {
   id: string;
@@ -71,13 +71,7 @@ const ServiceCard = ({
       <CardHeader>
         <div className="flex justify-between items-start mb-2">
           <Badge variant="secondary">{category}</Badge>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <Eye className="h-4 w-4" />
-              <span className="text-sm">{views}</span>
-            </div>
-            <span className="text-lg font-bold text-primary">KSh {price}</span>
-          </div>
+          <span className="text-lg font-bold text-primary">KSh {price}</span>
         </div>
         <CardTitle className="line-clamp-1">{title}</CardTitle>
         <CardDescription className="line-clamp-2">{description}</CardDescription>

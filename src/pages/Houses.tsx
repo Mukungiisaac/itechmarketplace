@@ -128,7 +128,6 @@ const Houses = () => {
                       hasWifi={house.wifi === "yes"}
                       phone={house.contact_number}
                       image={house.photo_url || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80"}
-                      views={house.views || 0}
                     />
                   ))}
                 </div>
