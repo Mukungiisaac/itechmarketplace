@@ -31,6 +31,26 @@ const LandlordDashboard = () => {
   useEffect(() => {
     checkAuth();
     fetchHouses();
+
+    // Subscribe to real-time updates for houses
+    const channel = supabase
+      .channel('houses-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'houses'
+        },
+        () => {
+          fetchHouses();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const checkAuth = async () => {

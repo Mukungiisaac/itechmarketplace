@@ -66,6 +66,58 @@ const AdminDashboard = () => {
     fetchUsers();
     fetchSubmissions();
     fetchAnalytics();
+
+    // Subscribe to real-time updates for all tables
+    const productsChannel = supabase
+      .channel('admin-products-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'products'
+        },
+        () => {
+          fetchAnalytics();
+        }
+      )
+      .subscribe();
+
+    const housesChannel = supabase
+      .channel('admin-houses-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'houses'
+        },
+        () => {
+          fetchAnalytics();
+        }
+      )
+      .subscribe();
+
+    const servicesChannel = supabase
+      .channel('admin-services-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'services'
+        },
+        () => {
+          fetchAnalytics();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(productsChannel);
+      supabase.removeChannel(housesChannel);
+      supabase.removeChannel(servicesChannel);
+    };
   }, []);
 
   const checkAdminAccess = async () => {

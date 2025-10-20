@@ -29,6 +29,26 @@ const ServiceProviderDashboard = () => {
   useEffect(() => {
     checkAuth();
     fetchServices();
+
+    // Subscribe to real-time updates for services
+    const channel = supabase
+      .channel('services-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'services'
+        },
+        () => {
+          fetchServices();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const checkAuth = async () => {

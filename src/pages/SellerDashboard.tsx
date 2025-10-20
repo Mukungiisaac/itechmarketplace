@@ -46,6 +46,26 @@ const SellerDashboard = () => {
     checkUserRole();
     fetchProducts();
     fetchProfile();
+
+    // Subscribe to real-time updates for products
+    const channel = supabase
+      .channel('products-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'products'
+        },
+        () => {
+          fetchProducts();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const checkUserRole = async () => {
