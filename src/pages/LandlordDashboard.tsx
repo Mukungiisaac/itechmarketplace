@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Trash2, Upload, Edit, Eye, Heart } from "lucide-react";
+import { Trash2, Upload, Pencil, Eye, Heart } from "lucide-react";
 
 const LandlordDashboard = () => {
   const navigate = useNavigate();
@@ -468,7 +468,7 @@ const LandlordDashboard = () => {
                           size="sm"
                           className="flex-1"
                         >
-                          <Edit className="w-4 h-4 mr-2" />
+                          <Pencil className="h-4 w-4 mr-2" />
                           Edit
                         </Button>
                         <Button
@@ -477,7 +477,7 @@ const LandlordDashboard = () => {
                           size="sm"
                           className="flex-1"
                         >
-                          <Trash2 className="w-4 h-4 mr-2" />
+                          <Trash2 className="h-4 w-4 mr-2" />
                           Delete
                         </Button>
                       </div>
