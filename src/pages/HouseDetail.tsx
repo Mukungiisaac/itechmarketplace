@@ -122,11 +122,11 @@ const HouseDetail = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl">
           <div className="space-y-4">
-            <div className="aspect-[4/3] overflow-hidden rounded-lg bg-muted">
+            <div className="overflow-hidden rounded-lg bg-muted">
               <img
                 src={house.image}
                 alt={house.name}
-                className="h-full w-full object-cover"
+                className="w-full h-auto object-contain"
               />
             </div>
           </div>
