@@ -15,8 +15,8 @@ interface House {
   title: string;
   location: string;
   house_type: string;
-  rent: number;
-  deposit: number;
+  rent: string;
+  deposit: string;
   distance: number;
   water: string;
   wifi: string;
@@ -49,9 +49,23 @@ const Houses = () => {
     staleTime: 0,
   });
 
+  const extractMinPrice = (priceStr: string): number => {
+    // Extract the minimum price from range like "5000-7000" or just "5000"
+    const match = priceStr.match(/(\d+)/);
+    return match ? parseFloat(match[1]) : 0;
+  };
+
+  const extractMaxPrice = (priceStr: string): number => {
+    // Extract the maximum price from range like "5000-7000" or just "5000"
+    const matches = priceStr.match(/(\d+)/g);
+    return matches && matches.length > 1 ? parseFloat(matches[1]) : (matches ? parseFloat(matches[0]) : 0);
+  };
+
   const filteredHouses = houses.filter((house) => {
-    const matchesMinPrice = filters.minPrice === null || house.rent >= filters.minPrice;
-    const matchesMaxPrice = filters.maxPrice === null || house.rent <= filters.maxPrice;
+    const minRent = extractMinPrice(house.rent);
+    const maxRent = extractMaxPrice(house.rent);
+    const matchesMinPrice = filters.minPrice === null || maxRent >= filters.minPrice;
+    const matchesMaxPrice = filters.maxPrice === null || minRent <= filters.maxPrice;
     const matchesSearch = searchTerm === "" || 
       house.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       house.location.toLowerCase().includes(searchTerm.toLowerCase()) ||

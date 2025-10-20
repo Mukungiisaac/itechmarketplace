@@ -8,7 +8,7 @@ import { Heart } from "lucide-react";
 interface ServiceCardProps {
   id: string;
   title: string;
-  price: number;
+  price: string;
   description: string;
   category: string;
   availability: string;

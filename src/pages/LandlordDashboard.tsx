@@ -90,8 +90,8 @@ const LandlordDashboard = () => {
           title: formData.title,
           location: formData.location,
           distance: parseFloat(formData.distance),
-          rent: parseFloat(formData.rent),
-          deposit: parseFloat(formData.deposit),
+          rent: formData.rent,
+          deposit: formData.deposit,
           house_type: formData.house_type,
           water: formData.water,
           wifi: formData.wifi,
@@ -133,8 +133,8 @@ const LandlordDashboard = () => {
         title: formData.title,
         location: formData.location,
         distance: parseFloat(formData.distance),
-        rent: parseFloat(formData.rent),
-        deposit: parseFloat(formData.deposit),
+        rent: formData.rent,
+        deposit: formData.deposit,
         house_type: formData.house_type,
         water: formData.water,
         wifi: formData.wifi,
@@ -179,8 +179,8 @@ const LandlordDashboard = () => {
       title: house.title,
       location: house.location,
       distance: house.distance.toString(),
-      rent: house.rent.toString(),
-      deposit: house.deposit.toString(),
+      rent: house.rent,
+      deposit: house.deposit,
       house_type: house.house_type,
       water: house.water,
       wifi: house.wifi,
@@ -291,9 +291,10 @@ const LandlordDashboard = () => {
                   <Label htmlFor="rent">Monthly Rent (KES)</Label>
                   <Input
                     id="rent"
-                    type="number"
+                    type="text"
                     value={formData.rent}
                     onChange={(e) => setFormData({ ...formData, rent: e.target.value })}
+                    placeholder="e.g., 5000 or 5000-7000"
                     required
                   />
                 </div>
@@ -302,9 +303,10 @@ const LandlordDashboard = () => {
                   <Label htmlFor="deposit">Deposit Amount (KES)</Label>
                   <Input
                     id="deposit"
-                    type="number"
+                    type="text"
                     value={formData.deposit}
                     onChange={(e) => setFormData({ ...formData, deposit: e.target.value })}
+                    placeholder="e.g., 5000 or 5000-7000"
                     required
                   />
                 </div>

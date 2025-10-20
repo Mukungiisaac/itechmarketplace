@@ -90,7 +90,7 @@ const ServiceProviderDashboard = () => {
           title: formData.title,
           category: formData.category,
           description: formData.description,
-          price: parseFloat(formData.price),
+          price: formData.price,
           contact_number: formData.contact_number,
           availability: formData.availability,
           photo_url: formData.photo_url
@@ -104,7 +104,7 @@ const ServiceProviderDashboard = () => {
         title: formData.title,
         category: formData.category,
         description: formData.description,
-        price: parseFloat(formData.price),
+        price: formData.price,
         contact_number: formData.contact_number,
         availability: formData.availability,
         photo_url: formData.photo_url
@@ -146,7 +146,7 @@ const ServiceProviderDashboard = () => {
       title: service.title,
       category: service.category,
       description: service.description || "",
-      price: service.price.toString(),
+      price: service.price,
       contact_number: service.contact_number,
       availability: service.availability,
       photo_url: service.photo_url || ""
@@ -265,10 +265,10 @@ const ServiceProviderDashboard = () => {
                   <Label htmlFor="price">Price/Rate (KES)</Label>
                   <Input
                     id="price"
-                    type="number"
+                    type="text"
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    placeholder="Enter your service rate"
+                    placeholder="e.g., 300 or 300-400"
                     required
                   />
                 </div>

@@ -34,14 +34,23 @@ const Services = () => {
     staleTime: 0,
   });
 
-  const extractPrice = (priceStr: string) => {
-    return parseFloat(priceStr.replace(/[^0-9.]/g, ""));
+  const extractMinPrice = (priceStr: string): number => {
+    // Extract the minimum price from range like "300-400" or just "300"
+    const match = priceStr.match(/(\d+)/);
+    return match ? parseFloat(match[1]) : 0;
+  };
+
+  const extractMaxPrice = (priceStr: string): number => {
+    // Extract the maximum price from range like "300-400" or just "300"
+    const matches = priceStr.match(/(\d+)/g);
+    return matches && matches.length > 1 ? parseFloat(matches[1]) : (matches ? parseFloat(matches[0]) : 0);
   };
 
   const filteredServices = services.filter((service) => {
-    const price = service.price;
-    const matchesMinPrice = filters.minPrice === null || price >= filters.minPrice;
-    const matchesMaxPrice = filters.maxPrice === null || price <= filters.maxPrice;
+    const minPrice = extractMinPrice(service.price);
+    const maxPrice = extractMaxPrice(service.price);
+    const matchesMinPrice = filters.minPrice === null || maxPrice >= filters.minPrice;
+    const matchesMaxPrice = filters.maxPrice === null || minPrice <= filters.maxPrice;
     const matchesSearch = searchTerm === "" ||
       service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (service.description?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||

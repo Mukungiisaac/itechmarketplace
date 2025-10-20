@@ -75,14 +75,14 @@ export type Database = {
         Row: {
           contact_number: string
           created_at: string
-          deposit: number
+          deposit: string
           distance: number
           house_type: string
           id: string
           landlord_id: string
           location: string
           photo_url: string | null
-          rent: number
+          rent: string
           title: string
           updated_at: string
           water: string
@@ -91,14 +91,14 @@ export type Database = {
         Insert: {
           contact_number: string
           created_at?: string
-          deposit: number
+          deposit: string
           distance: number
           house_type: string
           id?: string
           landlord_id: string
           location: string
           photo_url?: string | null
-          rent: number
+          rent: string
           title: string
           updated_at?: string
           water: string
@@ -107,14 +107,14 @@ export type Database = {
         Update: {
           contact_number?: string
           created_at?: string
-          deposit?: number
+          deposit?: string
           distance?: number
           house_type?: string
           id?: string
           landlord_id?: string
           location?: string
           photo_url?: string | null
-          rent?: number
+          rent?: string
           title?: string
           updated_at?: string
           water?: string
@@ -136,7 +136,7 @@ export type Database = {
           description: string | null
           id: string
           photo_url: string | null
-          price: number
+          price: string
           seller_id: string
           title: string
           updated_at: string
@@ -146,7 +146,7 @@ export type Database = {
           description?: string | null
           id?: string
           photo_url?: string | null
-          price: number
+          price: string
           seller_id: string
           title: string
           updated_at?: string
@@ -156,7 +156,7 @@ export type Database = {
           description?: string | null
           id?: string
           photo_url?: string | null
-          price?: number
+          price?: string
           seller_id?: string
           title?: string
           updated_at?: string
@@ -207,7 +207,7 @@ export type Database = {
           description: string | null
           id: string
           photo_url: string | null
-          price: number
+          price: string
           provider_id: string
           title: string
           updated_at: string
@@ -220,7 +220,7 @@ export type Database = {
           description?: string | null
           id?: string
           photo_url?: string | null
-          price: number
+          price: string
           provider_id: string
           title: string
           updated_at?: string
@@ -233,7 +233,7 @@ export type Database = {
           description?: string | null
           id?: string
           photo_url?: string | null
-          price?: number
+          price?: string
           provider_id?: string
           title?: string
           updated_at?: string

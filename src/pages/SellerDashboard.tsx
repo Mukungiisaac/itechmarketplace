@@ -16,7 +16,7 @@ interface Product {
   id: string;
   title: string;
   description: string | null;
-  price: number;
+  price: string;
   photo_url: string | null;
   created_at: string;
 }
@@ -174,7 +174,7 @@ const SellerDashboard = () => {
       const productData = {
         title: formData.title,
         description: formData.description,
-        price: parseFloat(formData.price),
+        price: formData.price,
         photo_url: formData.photo_url,
         seller_id: user.id
       };
@@ -214,7 +214,7 @@ const SellerDashboard = () => {
     setFormData({
       title: product.title,
       description: product.description || "",
-      price: product.price.toString(),
+      price: product.price,
       photo_url: product.photo_url || ""
     });
     setIsDialogOpen(true);
@@ -370,10 +370,10 @@ const SellerDashboard = () => {
                     <Label htmlFor="price">Price (KES)</Label>
                     <Input
                       id="price"
-                      type="number"
-                      step="0.01"
+                      type="text"
                       value={formData.price}
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                      placeholder="e.g., 300 or 300-400"
                       required
                     />
                   </div>
