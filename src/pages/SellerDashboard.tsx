@@ -460,20 +460,24 @@ const SellerDashboard = () => {
                           </span>
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <Button
                           variant="outline"
-                          size="icon"
+                          size="sm"
                           onClick={() => handleEdit(product)}
+                          className="flex-1"
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Edit
                         </Button>
                         <Button
                           variant="destructive"
-                          size="icon"
+                          size="sm"
                           onClick={() => handleDelete(product.id)}
+                          className="flex-1"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
                         </Button>
                       </div>
                     </div>

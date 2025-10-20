@@ -461,7 +461,7 @@ const LandlordDashboard = () => {
                           {house.likes} likes
                         </span>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <Button
                           onClick={() => handleEdit(house)}
                           variant="outline"
