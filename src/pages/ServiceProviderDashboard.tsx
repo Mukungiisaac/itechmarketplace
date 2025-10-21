@@ -267,6 +267,9 @@ const ServiceProviderDashboard = () => {
                       <SelectItem value="tutoring">Tutoring</SelectItem>
                       <SelectItem value="catering">Catering</SelectItem>
                       <SelectItem value="photography">Photography</SelectItem>
+                      <SelectItem value="jewelries-graphics">Jewelries and Graphics</SelectItem>
+                      <SelectItem value="cyber-services">Cyber services</SelectItem>
+                      <SelectItem value="tech-services">Tech services</SelectItem>
                       <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
