@@ -1,16 +1,19 @@
-import { Link } from "react-router-dom";
-import { Home, Package, Building2, Megaphone, LogIn, LayoutDashboard, Wrench, Menu, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Home, Package, Building2, Megaphone, LogIn, LogOut, LayoutDashboard, Wrench, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import logoImage from "@/assets/iTech-logo.png";
+import { toast } from "sonner";
 
 const Header = () => {
   const [isSeller, setIsSeller] = useState(false);
   const [isLandlord, setIsLandlord] = useState(false);
   const [isServiceProvider, setIsServiceProvider] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     checkUserRole();
@@ -19,6 +22,7 @@ const Header = () => {
   const checkUserRole = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
+      setIsLoggedIn(true);
       const { data: roles } = await supabase
         .from("user_roles")
         .select("role")
@@ -28,7 +32,19 @@ const Header = () => {
       setIsSeller(roles?.role === "seller");
       setIsLandlord(roles?.role === "landlord");
       setIsServiceProvider(roles?.role === "service_provider");
+    } else {
+      setIsLoggedIn(false);
     }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsLoggedIn(false);
+    setIsSeller(false);
+    setIsLandlord(false);
+    setIsServiceProvider(false);
+    toast.success("Logged out successfully");
+    navigate("/");
   };
 
   return (
@@ -103,12 +119,19 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button size="sm" asChild className="gap-2 hidden md:flex transition-all duration-300 hover:scale-105 hover:shadow-lg">
-            <Link to="/login">
-              <LogIn className="h-4 w-4" />
-              Login
-            </Link>
-          </Button>
+          {!isLoggedIn ? (
+            <Button size="sm" asChild className="gap-2 hidden md:flex transition-all duration-300 hover:scale-105 hover:shadow-lg">
+              <Link to="/login">
+                <LogIn className="h-4 w-4" />
+                Login
+              </Link>
+            </Button>
+          ) : (
+            <Button size="sm" onClick={handleLogout} className="gap-2 hidden md:flex transition-all duration-300 hover:scale-105 hover:shadow-lg">
+              <LogOut className="h-4 w-4" />
+              Logout
+            </Button>
+          )}
 
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -173,12 +196,19 @@ const Header = () => {
                     </Link>
                   </Button>
                 )}
-                <Button size="lg" asChild className="gap-3 mt-4 transition-all duration-300 hover:scale-105 hover:shadow-lg">
-                  <Link to="/login" onClick={() => setIsOpen(false)}>
-                    <LogIn className="h-5 w-5" />
-                    Login
-                  </Link>
-                </Button>
+                {!isLoggedIn ? (
+                  <Button size="lg" asChild className="gap-3 mt-4 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                    <Link to="/login" onClick={() => setIsOpen(false)}>
+                      <LogIn className="h-5 w-5" />
+                      Login
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button size="lg" onClick={() => { handleLogout(); setIsOpen(false); }} className="gap-3 mt-4 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                    <LogOut className="h-5 w-5" />
+                    Logout
+                  </Button>
+                )}
               </nav>
             </SheetContent>
           </Sheet>
