@@ -38,11 +38,23 @@ const ProductCard = ({
     navigate("/product-detail", { state: { id, name, price, description, seller, phone, image } });
   };
 
-  const handleLike = (e: React.MouseEvent) => {
+  const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const newLikedState = !isLiked;
     setIsLiked(newLikedState);
     localStorage.setItem(likeKey, String(newLikedState));
+    try {
+      if (id) {
+        const action = newLikedState ? 'like' : 'unlike';
+        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/engagement`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ table: 'products', id, action })
+        });
+      }
+    } catch (error) {
+      console.error('Error updating likes:', error);
+    }
   };
 
   return (

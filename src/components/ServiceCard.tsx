@@ -43,11 +43,21 @@ const ServiceCard = ({
     });
   };
 
-  const handleLike = (e: React.MouseEvent) => {
+  const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const newLikedState = !isLiked;
     setIsLiked(newLikedState);
     localStorage.setItem(likeKey, String(newLikedState));
+    try {
+      const action = newLikedState ? 'like' : 'unlike';
+      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/engagement`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table: 'services', id, action })
+      });
+    } catch (error) {
+      console.error('Error updating likes:', error);
+    }
   };
 
   return (

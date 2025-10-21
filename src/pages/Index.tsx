@@ -55,6 +55,7 @@ const Index = () => {
       if (error) throw error;
 
       const formatted = (productsData || []).map((product: any) => ({
+        id: product.id,
         name: product.title,
         price: `KES ${product.price}`,
         description: product.description || "",
@@ -134,6 +135,7 @@ const Index = () => {
       if (error) throw error;
 
       const formatted = (housesData || []).map((house: any) => ({
+        id: house.id,
         name: house.title,
         price: `KSh ${house.rent}`,
         location: house.location,
