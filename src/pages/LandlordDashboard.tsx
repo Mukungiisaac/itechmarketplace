@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import Header from "@/components/Header";
 import { Trash2, Upload, Pencil, Eye, Heart } from "lucide-react";
 
 const LandlordDashboard = () => {
@@ -251,8 +252,9 @@ const LandlordDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="max-w-6xl mx-auto space-y-8 p-8">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-foreground">Landlord Dashboard</h1>
           <Button onClick={handleLogout} variant="outline">Logout</Button>
