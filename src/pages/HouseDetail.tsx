@@ -24,18 +24,11 @@ const HouseDetail = () => {
 
   const incrementViews = async () => {
     try {
-      const { data: currentHouse } = await supabase
-        .from("houses")
-        .select("views")
-        .eq("id", house.id)
-        .single();
-
-      if (currentHouse) {
-        await supabase
-          .from("houses")
-          .update({ views: (currentHouse.views || 0) + 1 })
-          .eq("id", house.id);
-      }
+      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/engagement`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table: 'houses', id: house.id, action: 'view' })
+      });
     } catch (error) {
       console.error("Error incrementing views:", error);
     }
@@ -43,22 +36,14 @@ const HouseDetail = () => {
 
   const handleLike = async () => {
     try {
-      const { data: currentHouse } = await supabase
-        .from("houses")
-        .select("likes")
-        .eq("id", house.id)
-        .single();
-
-      if (currentHouse) {
-        const newLikes = isLiked ? (currentHouse.likes || 0) - 1 : (currentHouse.likes || 0) + 1;
-        await supabase
-          .from("houses")
-          .update({ likes: newLikes })
-          .eq("id", house.id);
-        
-        setIsLiked(!isLiked);
-        localStorage.setItem(`like_house_detail_${house.id}`, String(!isLiked));
-      }
+      const action = isLiked ? 'unlike' : 'like'
+      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/engagement`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table: 'houses', id: house.id, action })
+      });
+      setIsLiked(!isLiked);
+      localStorage.setItem(`like_house_detail_${house.id}`, String(!isLiked));
     } catch (error) {
       console.error("Error updating likes:", error);
     }

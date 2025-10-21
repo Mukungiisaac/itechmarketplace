@@ -23,18 +23,11 @@ const ProductDetail = () => {
 
   const incrementViews = async () => {
     try {
-      const { data: currentProduct } = await supabase
-        .from("products")
-        .select("views")
-        .eq("id", product.id)
-        .single();
-
-      if (currentProduct) {
-        await supabase
-          .from("products")
-          .update({ views: (currentProduct.views || 0) + 1 })
-          .eq("id", product.id);
-      }
+      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/engagement`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table: 'products', id: product.id, action: 'view' })
+      });
     } catch (error) {
       console.error("Error incrementing views:", error);
     }
@@ -42,22 +35,14 @@ const ProductDetail = () => {
 
   const handleLike = async () => {
     try {
-      const { data: currentProduct } = await supabase
-        .from("products")
-        .select("likes")
-        .eq("id", product.id)
-        .single();
-
-      if (currentProduct) {
-        const newLikes = isLiked ? (currentProduct.likes || 0) - 1 : (currentProduct.likes || 0) + 1;
-        await supabase
-          .from("products")
-          .update({ likes: newLikes })
-          .eq("id", product.id);
-        
-        setIsLiked(!isLiked);
-        localStorage.setItem(`like_product_detail_${product.id}`, String(!isLiked));
-      }
+      const action = isLiked ? 'unlike' : 'like'
+      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/engagement`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table: 'products', id: product.id, action })
+      });
+      setIsLiked(!isLiked);
+      localStorage.setItem(`like_product_detail_${product.id}`, String(!isLiked));
     } catch (error) {
       console.error("Error updating likes:", error);
     }

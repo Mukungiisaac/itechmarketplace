@@ -66,9 +66,8 @@ const Index = () => {
 
       return formatted;
     },
-    refetchInterval: 5000,
-    refetchOnWindowFocus: true,
-    staleTime: 0,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
   });
 
   const { data: services = [], isLoading: servicesLoading } = useQuery({
@@ -103,9 +102,8 @@ const Index = () => {
         promoted: true,
       }));
     },
-    refetchInterval: 5000,
-    refetchOnWindowFocus: true,
-    staleTime: 0,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
   });
 
   const { data: houses = [], isLoading: housesLoading } = useQuery({
@@ -149,9 +147,8 @@ const Index = () => {
 
       return formatted;
     },
-    refetchInterval: 5000,
-    refetchOnWindowFocus: true,
-    staleTime: 0,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
   });
 
   const extractPrice = (priceStr: string | number) => {

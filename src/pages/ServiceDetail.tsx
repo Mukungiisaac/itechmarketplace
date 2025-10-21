@@ -24,18 +24,11 @@ const ServiceDetail = () => {
 
   const incrementViews = async () => {
     try {
-      const { data: currentService } = await supabase
-        .from("services")
-        .select("views")
-        .eq("id", service.id)
-        .single();
-
-      if (currentService) {
-        await supabase
-          .from("services")
-          .update({ views: (currentService.views || 0) + 1 })
-          .eq("id", service.id);
-      }
+      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/engagement`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table: 'services', id: service.id, action: 'view' })
+      });
     } catch (error) {
       console.error("Error incrementing views:", error);
     }
@@ -43,22 +36,14 @@ const ServiceDetail = () => {
 
   const handleLike = async () => {
     try {
-      const { data: currentService } = await supabase
-        .from("services")
-        .select("likes")
-        .eq("id", service.id)
-        .single();
-
-      if (currentService) {
-        const newLikes = isLiked ? (currentService.likes || 0) - 1 : (currentService.likes || 0) + 1;
-        await supabase
-          .from("services")
-          .update({ likes: newLikes })
-          .eq("id", service.id);
-        
-        setIsLiked(!isLiked);
-        localStorage.setItem(`like_service_detail_${service.id}`, String(!isLiked));
-      }
+      const action = isLiked ? 'unlike' : 'like'
+      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/engagement`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table: 'services', id: service.id, action })
+      });
+      setIsLiked(!isLiked);
+      localStorage.setItem(`like_service_detail_${service.id}`, String(!isLiked));
     } catch (error) {
       console.error("Error updating likes:", error);
     }
