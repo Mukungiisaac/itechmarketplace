@@ -123,7 +123,7 @@ const ServiceProviderDashboard = () => {
       error = result.error;
     } else {
       // Insert new service
-      const result = await supabase.from("services").insert({
+      const result = await supabase.from("services").insert([{
         provider_id: user.id,
         title: formData.title,
         category_id: formData.category_id || null,
@@ -133,7 +133,7 @@ const ServiceProviderDashboard = () => {
         contact_number: formData.contact_number,
         availability: formData.availability,
         photo_url: formData.photo_url
-      });
+      }]);
       error = result.error;
     }
 

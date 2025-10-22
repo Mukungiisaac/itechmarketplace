@@ -280,7 +280,6 @@ export type Database = {
       services: {
         Row: {
           availability: string
-          category: string
           category_id: string | null
           contact_number: string
           created_at: string
@@ -297,7 +296,6 @@ export type Database = {
         }
         Insert: {
           availability: string
-          category: string
           category_id?: string | null
           contact_number: string
           created_at?: string
@@ -314,7 +312,6 @@ export type Database = {
         }
         Update: {
           availability?: string
-          category?: string
           category_id?: string | null
           contact_number?: string
           created_at?: string
