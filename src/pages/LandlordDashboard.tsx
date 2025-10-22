@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
+import CategorySelector from "@/components/CategorySelector";
 import { Trash2, Upload, Pencil, Eye, Heart } from "lucide-react";
 
 const LandlordDashboard = () => {
@@ -26,7 +27,9 @@ const LandlordDashboard = () => {
     water: "",
     wifi: "",
     contact_number: "",
-    photo_url: ""
+    photo_url: "",
+    category_id: "",
+    subcategory_id: ""
   });
 
   useEffect(() => {
@@ -117,7 +120,9 @@ const LandlordDashboard = () => {
           water: formData.water,
           wifi: formData.wifi,
           contact_number: formData.contact_number,
-          photo_url: formData.photo_url
+          photo_url: formData.photo_url,
+          category_id: formData.category_id || null,
+          subcategory_id: formData.subcategory_id || null
         })
         .eq("id", editingId);
 
@@ -144,7 +149,9 @@ const LandlordDashboard = () => {
           water: "",
           wifi: "",
           contact_number: "",
-          photo_url: ""
+          photo_url: "",
+          category_id: "",
+          subcategory_id: ""
         });
         fetchHouses();
       }
@@ -160,7 +167,9 @@ const LandlordDashboard = () => {
         water: formData.water,
         wifi: formData.wifi,
         contact_number: formData.contact_number,
-        photo_url: formData.photo_url
+        photo_url: formData.photo_url,
+        category_id: formData.category_id || null,
+        subcategory_id: formData.subcategory_id || null
       });
 
       if (error) {
@@ -185,7 +194,9 @@ const LandlordDashboard = () => {
           water: "",
           wifi: "",
           contact_number: "",
-          photo_url: ""
+          photo_url: "",
+          category_id: "",
+          subcategory_id: ""
         });
         fetchHouses();
       }
@@ -206,7 +217,9 @@ const LandlordDashboard = () => {
       water: house.water,
       wifi: house.wifi,
       contact_number: house.contact_number,
-      photo_url: house.photo_url || ""
+      photo_url: house.photo_url || "",
+      category_id: house.category_id || "",
+      subcategory_id: house.subcategory_id || ""
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -223,7 +236,9 @@ const LandlordDashboard = () => {
       water: "",
       wifi: "",
       contact_number: "",
-      photo_url: ""
+      photo_url: "",
+      category_id: "",
+      subcategory_id: ""
     });
   };
 
@@ -277,6 +292,13 @@ const LandlordDashboard = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
+                <CategorySelector
+                  categoryId={formData.category_id}
+                  subcategoryId={formData.subcategory_id}
+                  onCategoryChange={(id) => setFormData({ ...formData, category_id: id })}
+                  onSubcategoryChange={(id) => setFormData({ ...formData, subcategory_id: id })}
+                />
+
                 <div className="space-y-2">
                   <Label htmlFor="title">House Title</Label>
                   <Input

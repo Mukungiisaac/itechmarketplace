@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
+import CategorySelector from "@/components/CategorySelector";
 import { Trash2, Upload, Pencil, Eye, Heart } from "lucide-react";
 
 const ServiceProviderDashboard = () => {
@@ -19,7 +20,8 @@ const ServiceProviderDashboard = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: "",
-    category: "",
+    category_id: "",
+    subcategory_id: "",
     description: "",
     price: "",
     contact_number: "",
@@ -109,7 +111,8 @@ const ServiceProviderDashboard = () => {
         .from("services")
         .update({
           title: formData.title,
-          category: formData.category,
+          category_id: formData.category_id || null,
+          subcategory_id: formData.subcategory_id || null,
           description: formData.description,
           price: formData.price,
           contact_number: formData.contact_number,
@@ -123,7 +126,8 @@ const ServiceProviderDashboard = () => {
       const result = await supabase.from("services").insert({
         provider_id: user.id,
         title: formData.title,
-        category: formData.category,
+        category_id: formData.category_id || null,
+        subcategory_id: formData.subcategory_id || null,
         description: formData.description,
         price: formData.price,
         contact_number: formData.contact_number,
@@ -147,7 +151,8 @@ const ServiceProviderDashboard = () => {
       });
       setFormData({
         title: "",
-        category: "",
+        category_id: "",
+        subcategory_id: "",
         description: "",
         price: "",
         contact_number: "",
@@ -165,7 +170,8 @@ const ServiceProviderDashboard = () => {
     setEditingId(service.id);
     setFormData({
       title: service.title,
-      category: service.category,
+      category_id: service.category_id || "",
+      subcategory_id: service.subcategory_id || "",
       description: service.description || "",
       price: service.price,
       contact_number: service.contact_number,
@@ -179,7 +185,8 @@ const ServiceProviderDashboard = () => {
     setEditingId(null);
     setFormData({
       title: "",
-      category: "",
+      category_id: "",
+      subcategory_id: "",
       description: "",
       price: "",
       contact_number: "",
@@ -238,45 +245,27 @@ const ServiceProviderDashboard = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Service Title</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    placeholder="e.g., Professional Plumbing Services"
-                    required
-                  />
-                </div>
+              <CategorySelector
+                categoryId={formData.category_id}
+                subcategoryId={formData.subcategory_id}
+                onCategoryChange={(id) => setFormData({ ...formData, category_id: id })}
+                onSubcategoryChange={(id) => setFormData({ ...formData, subcategory_id: id })}
+                required
+              />
 
-                <div className="space-y-2">
-                  <Label htmlFor="category">Service Category</Label>
-                  <Select
-                    value={formData.category}
-                    onValueChange={(value) => setFormData({ ...formData, category: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="plumbing">Plumbing</SelectItem>
-                      <SelectItem value="electrical">Electrical</SelectItem>
-                      <SelectItem value="carpentry">Carpentry</SelectItem>
-                      <SelectItem value="cleaning">Cleaning</SelectItem>
-                      <SelectItem value="laundry">Laundry</SelectItem>
-                      <SelectItem value="tutoring">Tutoring</SelectItem>
-                      <SelectItem value="catering">Catering</SelectItem>
-                      <SelectItem value="photography">Photography</SelectItem>
-                      <SelectItem value="jewelries-graphics">Jewelries and Graphics</SelectItem>
-                      <SelectItem value="cyber-services">Cyber services</SelectItem>
-                      <SelectItem value="tech-services">Tech services</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="title">Service Title</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="e.g., Professional Plumbing Services"
+                  required
+                />
+              </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
                   <Textarea
                     id="description"
                     value={formData.description}

@@ -35,7 +35,7 @@ interface Product {
 const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
-    category: "all",
+    categoryId: "all",
     minPrice: null as number | null,
     maxPrice: null as number | null,
   });

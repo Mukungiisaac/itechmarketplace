@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
+import CategorySelector from "@/components/CategorySelector";
 import { Pencil, Trash2, User, LogOut, Upload, Eye, Heart } from "lucide-react";
 
 interface Product {
@@ -33,7 +34,9 @@ const SellerDashboard = () => {
     title: "",
     description: "",
     price: "",
-    photo_url: ""
+    photo_url: "",
+    category_id: "",
+    subcategory_id: ""
   });
   const [profileForm, setProfileForm] = useState({
     full_name: "",
@@ -198,6 +201,8 @@ const SellerDashboard = () => {
         description: formData.description,
         price: formData.price,
         photo_url: formData.photo_url,
+        category_id: formData.category_id || null,
+        subcategory_id: formData.subcategory_id || null,
         seller_id: user.id
       };
 
@@ -218,7 +223,7 @@ const SellerDashboard = () => {
         toast({ title: "Success", description: "Product posted successfully!", variant: "success" });
       }
 
-      setFormData({ title: "", description: "", price: "", photo_url: "" });
+      setFormData({ title: "", description: "", price: "", photo_url: "", category_id: "", subcategory_id: "" });
       setEditingProduct(null);
       setIsDialogOpen(false);
       fetchProducts();
@@ -237,7 +242,9 @@ const SellerDashboard = () => {
       title: product.title,
       description: product.description || "",
       price: product.price,
-      photo_url: product.photo_url || ""
+      photo_url: product.photo_url || "",
+      category_id: "",
+      subcategory_id: ""
     });
     setIsDialogOpen(true);
   };
@@ -267,7 +274,7 @@ const SellerDashboard = () => {
     setIsDialogOpen(open);
     if (!open) {
       setEditingProduct(null);
-      setFormData({ title: "", description: "", price: "", photo_url: "" });
+      setFormData({ title: "", description: "", price: "", photo_url: "", category_id: "", subcategory_id: "" });
     }
   };
 
@@ -371,6 +378,13 @@ const SellerDashboard = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  <CategorySelector
+                    categoryId={formData.category_id}
+                    subcategoryId={formData.subcategory_id}
+                    onCategoryChange={(id) => setFormData({ ...formData, category_id: id })}
+                    onSubcategoryChange={(id) => setFormData({ ...formData, subcategory_id: id })}
+                    required
+                  />
                   <div>
                     <Label htmlFor="title">Title</Label>
                     <Input

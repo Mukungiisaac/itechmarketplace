@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,23 +10,45 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Category {
+  id: string;
+  name: string;
+}
 
 interface FilterSidebarProps {
   onFilterChange?: (filters: {
-    category: string;
+    categoryId: string;
     minPrice: number | null;
     maxPrice: number | null;
   }) => void;
 }
 
 const FilterSidebar = ({ onFilterChange }: FilterSidebarProps) => {
-  const [category, setCategory] = useState("all");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryId, setCategoryId] = useState("all");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("id, name")
+      .order("sort_order");
+
+    if (!error && data) {
+      setCategories(data);
+    }
+  };
+
   const handleApplyFilters = () => {
     onFilterChange?.({
-      category,
+      categoryId,
       minPrice: minPrice ? parseFloat(minPrice) : null,
       maxPrice: maxPrice ? parseFloat(maxPrice) : null,
     });
@@ -39,15 +61,17 @@ const FilterSidebar = ({ onFilterChange }: FilterSidebarProps) => {
           <Label htmlFor="category" className="text-base font-semibold">
             Category
           </Label>
-          <Select value={category} onValueChange={setCategory}>
+          <Select value={categoryId} onValueChange={setCategoryId}>
             <SelectTrigger id="category">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-[300px] overflow-y-auto bg-background z-50">
               <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="houses">Houses</SelectItem>
-              <SelectItem value="products">Products</SelectItem>
-              <SelectItem value="services">Services</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
