@@ -112,7 +112,6 @@ export type Database = {
           location: string
           photo_url: string | null
           rent: string
-          subcategory_id: string | null
           title: string
           updated_at: string
           views: number
@@ -132,7 +131,6 @@ export type Database = {
           location: string
           photo_url?: string | null
           rent: string
-          subcategory_id?: string | null
           title: string
           updated_at?: string
           views?: number
@@ -152,7 +150,6 @@ export type Database = {
           location?: string
           photo_url?: string | null
           rent?: string
-          subcategory_id?: string | null
           title?: string
           updated_at?: string
           views?: number
@@ -174,13 +171,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "houses_subcategory_id_fkey"
-            columns: ["subcategory_id"]
-            isOneToOne: false
-            referencedRelation: "subcategories"
-            referencedColumns: ["id"]
-          },
         ]
       }
       products: {
@@ -193,7 +183,6 @@ export type Database = {
           photo_url: string | null
           price: string
           seller_id: string
-          subcategory_id: string | null
           title: string
           updated_at: string
           views: number
@@ -207,7 +196,6 @@ export type Database = {
           photo_url?: string | null
           price: string
           seller_id: string
-          subcategory_id?: string | null
           title: string
           updated_at?: string
           views?: number
@@ -221,7 +209,6 @@ export type Database = {
           photo_url?: string | null
           price?: string
           seller_id?: string
-          subcategory_id?: string | null
           title?: string
           updated_at?: string
           views?: number
@@ -239,13 +226,6 @@ export type Database = {
             columns: ["seller_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "products_subcategory_id_fkey"
-            columns: ["subcategory_id"]
-            isOneToOne: false
-            referencedRelation: "subcategories"
             referencedColumns: ["id"]
           },
         ]
@@ -289,7 +269,6 @@ export type Database = {
           photo_url: string | null
           price: string
           provider_id: string
-          subcategory_id: string | null
           title: string
           updated_at: string
           views: number
@@ -305,7 +284,6 @@ export type Database = {
           photo_url?: string | null
           price: string
           provider_id: string
-          subcategory_id?: string | null
           title: string
           updated_at?: string
           views?: number
@@ -321,7 +299,6 @@ export type Database = {
           photo_url?: string | null
           price?: string
           provider_id?: string
-          subcategory_id?: string | null
           title?: string
           updated_at?: string
           views?: number
@@ -339,48 +316,6 @@ export type Database = {
             columns: ["provider_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "services_subcategory_id_fkey"
-            columns: ["subcategory_id"]
-            isOneToOne: false
-            referencedRelation: "subcategories"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      subcategories: {
-        Row: {
-          category_id: string
-          created_at: string
-          description: string | null
-          id: string
-          name: string
-          sort_order: number | null
-        }
-        Insert: {
-          category_id: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          name: string
-          sort_order?: number | null
-        }
-        Update: {
-          category_id?: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          name?: string
-          sort_order?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "subcategories_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "categories"
             referencedColumns: ["id"]
           },
         ]
@@ -436,10 +371,7 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_approved: {
-        Args: { _user_id: string }
-        Returns: boolean
-      }
+      is_approved: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "landlord" | "seller" | "admin" | "service_provider"

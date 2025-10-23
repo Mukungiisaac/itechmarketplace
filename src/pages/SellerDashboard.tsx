@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import CategorySelector from "@/components/CategorySelector";
-import { Pencil, Trash2, User, LogOut, Upload, Eye, Heart } from "lucide-react";
+import { Pencil, Trash2, User, LogOut, Upload } from "lucide-react";
 
 interface Product {
   id: string;
@@ -20,8 +20,6 @@ interface Product {
   price: string;
   photo_url: string | null;
   created_at: string;
-  views: number;
-  likes: number;
 }
 
 const SellerDashboard = () => {
@@ -35,8 +33,7 @@ const SellerDashboard = () => {
     description: "",
     price: "",
     photo_url: "",
-    category_id: "",
-    subcategory_id: ""
+    category_id: ""
   });
   const [profileForm, setProfileForm] = useState({
     full_name: "",
@@ -129,7 +126,7 @@ const SellerDashboard = () => {
 
       const { data, error } = await supabase
         .from("products")
-        .select("id, title, description, price, photo_url, created_at, views, likes")
+        .select("id, title, description, price, photo_url, created_at")
         .eq("seller_id", user.id)
         .order("created_at", { ascending: false });
 
@@ -202,7 +199,6 @@ const SellerDashboard = () => {
         price: formData.price,
         photo_url: formData.photo_url,
         category_id: formData.category_id || null,
-        subcategory_id: formData.subcategory_id || null,
         seller_id: user.id
       };
 
@@ -223,7 +219,7 @@ const SellerDashboard = () => {
         toast({ title: "Success", description: "Product posted successfully!", variant: "success" });
       }
 
-      setFormData({ title: "", description: "", price: "", photo_url: "", category_id: "", subcategory_id: "" });
+      setFormData({ title: "", description: "", price: "", photo_url: "", category_id: "" });
       setEditingProduct(null);
       setIsDialogOpen(false);
       fetchProducts();
@@ -243,8 +239,7 @@ const SellerDashboard = () => {
       description: product.description || "",
       price: product.price,
       photo_url: product.photo_url || "",
-      category_id: "",
-      subcategory_id: ""
+      category_id: ""
     });
     setIsDialogOpen(true);
   };
@@ -274,7 +269,7 @@ const SellerDashboard = () => {
     setIsDialogOpen(open);
     if (!open) {
       setEditingProduct(null);
-      setFormData({ title: "", description: "", price: "", photo_url: "", category_id: "", subcategory_id: "" });
+      setFormData({ title: "", description: "", price: "", photo_url: "", category_id: "" });
     }
   };
 
@@ -380,9 +375,7 @@ const SellerDashboard = () => {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <CategorySelector
                     categoryId={formData.category_id}
-                    subcategoryId={formData.subcategory_id}
                     onCategoryChange={(id) => setFormData({ ...formData, category_id: id })}
-                    onSubcategoryChange={(id) => setFormData({ ...formData, subcategory_id: id })}
                     required
                   />
                   <div>
@@ -483,16 +476,6 @@ const SellerDashboard = () => {
                         <h4 className="text-xl font-semibold">{product.title}</h4>
                         <p className="text-muted-foreground mt-1">{product.description}</p>
                         <p className="text-lg font-bold mt-2">KES {product.price}</p>
-                        <div className="flex gap-4 mt-2 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Eye className="h-4 w-4" />
-                            {product.views} views
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Heart className="h-4 w-4" />
-                            {product.likes} likes
-                          </span>
-                        </div>
                       </div>
                       <div className="flex flex-col sm:flex-row gap-2">
                         <Button

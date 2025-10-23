@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import CategorySelector from "@/components/CategorySelector";
-import { Trash2, Upload, Pencil, Eye, Heart } from "lucide-react";
+import { Trash2, Upload, Pencil } from "lucide-react";
 
 const ServiceProviderDashboard = () => {
   const navigate = useNavigate();
@@ -21,7 +21,6 @@ const ServiceProviderDashboard = () => {
   const [formData, setFormData] = useState({
     title: "",
     category_id: "",
-    subcategory_id: "",
     description: "",
     price: "",
     contact_number: "",
@@ -81,7 +80,7 @@ const ServiceProviderDashboard = () => {
 
     const { data, error } = await supabase
       .from("services")
-      .select("id, title, category, description, price, contact_number, availability, photo_url, created_at, views, likes")
+      .select("id, title, description, price, contact_number, availability, photo_url, created_at")
       .eq("provider_id", user.id)
       .order("created_at", { ascending: false });
 
@@ -112,7 +111,6 @@ const ServiceProviderDashboard = () => {
         .update({
           title: formData.title,
           category_id: formData.category_id || null,
-          subcategory_id: formData.subcategory_id || null,
           description: formData.description,
           price: formData.price,
           contact_number: formData.contact_number,
@@ -127,7 +125,6 @@ const ServiceProviderDashboard = () => {
         provider_id: user.id,
         title: formData.title,
         category_id: formData.category_id || null,
-        subcategory_id: formData.subcategory_id || null,
         description: formData.description,
         price: formData.price,
         contact_number: formData.contact_number,
@@ -152,7 +149,6 @@ const ServiceProviderDashboard = () => {
       setFormData({
         title: "",
         category_id: "",
-        subcategory_id: "",
         description: "",
         price: "",
         contact_number: "",
@@ -171,7 +167,6 @@ const ServiceProviderDashboard = () => {
     setFormData({
       title: service.title,
       category_id: service.category_id || "",
-      subcategory_id: service.subcategory_id || "",
       description: service.description || "",
       price: service.price,
       contact_number: service.contact_number,
@@ -186,7 +181,6 @@ const ServiceProviderDashboard = () => {
     setFormData({
       title: "",
       category_id: "",
-      subcategory_id: "",
       description: "",
       price: "",
       contact_number: "",
@@ -247,9 +241,7 @@ const ServiceProviderDashboard = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
               <CategorySelector
                 categoryId={formData.category_id}
-                subcategoryId={formData.subcategory_id}
                 onCategoryChange={(id) => setFormData({ ...formData, category_id: id })}
-                onSubcategoryChange={(id) => setFormData({ ...formData, subcategory_id: id })}
                 required
               />
 
@@ -393,20 +385,9 @@ const ServiceProviderDashboard = () => {
                         />
                       )}
                       <h3 className="font-semibold text-lg mb-2">{service.title}</h3>
-                      <p className="text-sm text-muted-foreground mb-1">Category: {service.category}</p>
                       <p className="text-sm mb-2">{service.description}</p>
                       <p className="text-lg font-bold mb-2">KES {service.price}</p>
-                      <p className="text-sm mb-2">Available: {service.availability}</p>
-                      <div className="flex gap-4 mb-3 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Eye className="h-4 w-4" />
-                          {service.views} views
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Heart className="h-4 w-4" />
-                          {service.likes} likes
-                        </span>
-                      </div>
+                      <p className="text-sm mb-3">Available: {service.availability}</p>
                       <div className="flex flex-col sm:flex-row gap-2">
                         <Button
                           onClick={() => handleEdit(service)}
