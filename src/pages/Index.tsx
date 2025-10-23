@@ -92,7 +92,12 @@ const Index = () => {
 
       const { data: servicesData, error } = await supabase
         .from("services")
-        .select("*")
+        .select(`
+          *,
+          categories (
+            name
+          )
+        `)
         .in("provider_id", promotedUserIds)
         .order('created_at', { ascending: false });
 
@@ -175,8 +180,7 @@ const Index = () => {
     const matchesMaxPrice = filters.maxPrice === null || price <= filters.maxPrice;
     const matchesSearch = searchTerm === "" ||
       service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      service.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      service.category.toLowerCase().includes(searchTerm.toLowerCase());
+      service.description?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesMinPrice && matchesMaxPrice && matchesSearch;
   });
 
@@ -279,7 +283,7 @@ const Index = () => {
                       title={service.title}
                       price={service.price}
                       description={service.description || ""}
-                      category={service.category}
+                      category={service.categories?.name || "Uncategorized"}
                       availability={service.availability}
                       contactNumber={service.contact_number}
                       photoUrl={service.photo_url || ""}
