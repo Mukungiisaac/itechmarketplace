@@ -378,6 +378,7 @@ const SellerDashboard = () => {
                     categoryId={formData.category_id}
                     onCategoryChange={(id) => setFormData({ ...formData, category_id: id })}
                     required
+                    filterType="products"
                   />
                   <div>
                     <Label htmlFor="title">Title</Label>

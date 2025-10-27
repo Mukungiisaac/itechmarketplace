@@ -13,12 +13,14 @@ interface CategorySelectorProps {
   categoryId: string;
   onCategoryChange: (categoryId: string) => void;
   required?: boolean;
+  filterType?: "products" | "services" | "all";
 }
 
 const CategorySelector = ({
   categoryId,
   onCategoryChange,
   required = false,
+  filterType = "all",
 }: CategorySelectorProps) => {
   const [categories, setCategories] = useState<Category[]>([]);
 
@@ -27,10 +29,22 @@ const CategorySelector = ({
   }, []);
 
   const fetchCategories = async () => {
-    const { data, error } = await supabase
+    let query = supabase
       .from("categories")
-      .select("*")
-      .order("sort_order");
+      .select("*");
+
+    // Filter based on type
+    const serviceCategories = ["Services", "Hostels & Accommodation", "Repair & Maintenance", "Campus Events & Ads"];
+    
+    if (filterType === "products") {
+      query = query.not("name", "in", `(${serviceCategories.map(c => `"${c}"`).join(",")})`);
+    } else if (filterType === "services") {
+      query = query.in("name", serviceCategories);
+    }
+
+    query = query.order("sort_order");
+
+    const { data, error } = await query;
 
     if (!error && data) {
       setCategories(data);
