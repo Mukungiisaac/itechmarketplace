@@ -20,6 +20,7 @@ interface Product {
   price: string;
   photo_url: string | null;
   created_at: string;
+  category_id: string | null;
 }
 
 const SellerDashboard = () => {
@@ -126,7 +127,7 @@ const SellerDashboard = () => {
 
       const { data, error } = await supabase
         .from("products")
-        .select("id, title, description, price, photo_url, created_at")
+        .select("id, title, description, price, photo_url, created_at, category_id")
         .eq("seller_id", user.id)
         .order("created_at", { ascending: false });
 
@@ -239,7 +240,7 @@ const SellerDashboard = () => {
       description: product.description || "",
       price: product.price,
       photo_url: product.photo_url || "",
-      category_id: ""
+      category_id: product.category_id || ""
     });
     setIsDialogOpen(true);
   };
