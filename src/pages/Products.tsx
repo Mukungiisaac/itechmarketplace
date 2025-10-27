@@ -1,7 +1,8 @@
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FilterSidebar from "@/components/FilterSidebar";
@@ -26,20 +27,48 @@ interface Product {
   photo_url: string | null;
   seller_id: string;
   views: number;
+  category_id: string | null;
   profiles: {
     full_name: string;
     phone_number: string | null;
   };
 }
 
+interface Category {
+  id: string;
+  name: string;
+}
+
 const Products = () => {
+  const [searchParams] = useSearchParams();
+  const categoryFromUrl = searchParams.get("category");
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
-    categoryId: "all",
+    categoryId: categoryFromUrl || "all",
     minPrice: null as number | null,
     maxPrice: null as number | null,
   });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [categoryName, setCategoryName] = useState<string>("");
+
+  useEffect(() => {
+    if (categoryFromUrl) {
+      setFilters(prev => ({ ...prev, categoryId: categoryFromUrl }));
+      fetchCategoryName(categoryFromUrl);
+    }
+  }, [categoryFromUrl]);
+
+  const fetchCategoryName = async (categoryId: string) => {
+    const { data } = await supabase
+      .from("categories")
+      .select("name")
+      .eq("id", categoryId)
+      .single();
+    
+    if (data) {
+      setCategoryName(data.name);
+    }
+  };
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['products'],
@@ -94,11 +123,12 @@ const Products = () => {
     const price = extractPrice(product.price);
     const matchesMinPrice = filters.minPrice === null || price >= filters.minPrice;
     const matchesMaxPrice = filters.maxPrice === null || price <= filters.maxPrice;
+    const matchesCategory = filters.categoryId === "all" || product.category_id === filters.categoryId;
     const matchesSearch = searchTerm === "" ||
       product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.profiles?.full_name.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesMinPrice && matchesMaxPrice && matchesSearch;
+    return matchesMinPrice && matchesMaxPrice && matchesCategory && matchesSearch;
   });
 
   return (
@@ -147,8 +177,12 @@ const Products = () => {
 
             <section className="space-y-6 animate-fade-in">
               <div>
-                <h2 className="text-3xl font-bold tracking-tight">Marketplace Items</h2>
-                <p className="text-muted-foreground mt-1">Discover great deals on products</p>
+                <h2 className="text-3xl font-bold tracking-tight">
+                  {categoryName ? categoryName : "Marketplace Items"}
+                </h2>
+                <p className="text-muted-foreground mt-1">
+                  {categoryName ? `Browse ${categoryName.toLowerCase()} products` : "Discover great deals on products"}
+                </p>
               </div>
               {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -179,7 +213,16 @@ const Products = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-center text-muted-foreground">No products available yet.</p>
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground text-lg">
+                    {categoryName 
+                      ? `No ${categoryName.toLowerCase()} products have been posted yet.` 
+                      : "No products available yet."}
+                  </p>
+                  <p className="text-muted-foreground text-sm mt-2">
+                    Check back later for new listings!
+                  </p>
+                </div>
               )}
             </section>
           </main>
