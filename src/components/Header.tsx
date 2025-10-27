@@ -1,11 +1,23 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Home, Package, Building2, Megaphone, LogIn, LogOut, LayoutDashboard, Wrench, Menu, X } from "lucide-react";
+import { Home, Package, Building2, Megaphone, LogIn, LogOut, LayoutDashboard, Wrench, Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import logoImage from "@/assets/iTech-logo.png";
 import { toast } from "sonner";
+
+interface Category {
+  id: string;
+  name: string;
+  description: string | null;
+}
 
 const Header = () => {
   const [isSeller, setIsSeller] = useState(false);
@@ -13,10 +25,12 @@ const Header = () => {
   const [isServiceProvider, setIsServiceProvider] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [productCategories, setProductCategories] = useState<Category[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     checkUserRole();
+    fetchProductCategories();
   }, []);
 
   const checkUserRole = async () => {
@@ -34,6 +48,18 @@ const Header = () => {
       setIsServiceProvider(roles?.role === "service_provider");
     } else {
       setIsLoggedIn(false);
+    }
+  };
+
+  const fetchProductCategories = async () => {
+    const { data } = await supabase
+      .from("categories")
+      .select("id, name, description")
+      .not("name", "in", '("Services","Hostels & Accommodation","Repair & Maintenance","Campus Events & Ads")')
+      .order("sort_order");
+    
+    if (data) {
+      setProductCategories(data);
     }
   };
 
@@ -68,12 +94,32 @@ const Header = () => {
               Home
             </Link>
           </Button>
-          <Button variant="ghost" size="sm" asChild className="transition-all duration-300 hover:scale-105">
-            <Link to="/products" className="gap-2 group">
-              <Package className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
-              Products
-            </Link>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="transition-all duration-300 hover:scale-105 gap-2 group">
+                <Package className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
+                Products
+                <ChevronDown className="h-3 w-3 transition-transform duration-300 group-hover:rotate-180" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-[100]">
+              <DropdownMenuItem asChild>
+                <Link to="/products" className="cursor-pointer">
+                  All Products
+                </Link>
+              </DropdownMenuItem>
+              {productCategories.map((category) => (
+                <DropdownMenuItem key={category.id} asChild>
+                  <Link 
+                    to={`/products?category=${category.id}`} 
+                    className="cursor-pointer"
+                  >
+                    {category.name}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button variant="ghost" size="sm" asChild className="transition-all duration-300 hover:scale-105">
             <Link to="/houses" className="gap-2 group">
               <Building2 className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
