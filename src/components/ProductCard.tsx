@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Phone, Heart } from "lucide-react";
 
 interface ProductCardProps {
@@ -28,6 +29,7 @@ const ProductCard = ({
   const navigate = useNavigate();
   const likeKey = `like_product_${name}_${seller}`;
   const [isLiked, setIsLiked] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     const liked = localStorage.getItem(likeKey) === 'true';
@@ -60,6 +62,9 @@ const ProductCard = ({
   return (
     <Card className="group overflow-hidden transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1 animate-fade-in-up">
       <div className="aspect-[4/3] overflow-hidden bg-muted relative">
+        {!imageLoaded && (
+          <Skeleton className="absolute inset-0 z-0" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
         <Button
           variant="ghost"
@@ -72,7 +77,8 @@ const ProductCard = ({
         <img
           src={image}
           alt={name}
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+          className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={() => setImageLoaded(true)}
         />
       </div>
       <CardContent className="p-5 space-y-3">

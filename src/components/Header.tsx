@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Home, Package, Building2, Megaphone, LogIn, LogOut, LayoutDashboard, Wrench, Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +26,7 @@ const Header = () => {
   const [isServiceProvider, setIsServiceProvider] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [productCategories, setProductCategories] = useState<Category[]>([]);
   const navigate = useNavigate();
 
@@ -194,12 +196,29 @@ const Header = () => {
                     Home
                   </Link>
                 </Button>
-                <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
-                  <Link to="/products" onClick={() => setIsOpen(false)}>
-                    <Package className="h-5 w-5" />
-                    Products
-                  </Link>
-                </Button>
+                <Collapsible open={isCategoriesOpen} onOpenChange={setIsCategoriesOpen}>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="lg" className="justify-start gap-3 transition-all duration-300 hover:scale-105 w-full">
+                      <Package className="h-5 w-5" />
+                      Products
+                      <ChevronDown className={`h-4 w-4 ml-auto transition-transform duration-300 ${isCategoriesOpen ? 'rotate-180' : ''}`} />
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pl-8 flex flex-col gap-2 mt-2">
+                    <Button variant="ghost" size="sm" asChild className="justify-start transition-all duration-300 hover:scale-105">
+                      <Link to="/products" onClick={() => setIsOpen(false)}>
+                        All Products
+                      </Link>
+                    </Button>
+                    {productCategories.map((category) => (
+                      <Button key={category.id} variant="ghost" size="sm" asChild className="justify-start transition-all duration-300 hover:scale-105">
+                        <Link to={`/products?category=${category.id}`} onClick={() => setIsOpen(false)}>
+                          {category.name}
+                        </Link>
+                      </Button>
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
                 <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
                   <Link to="/houses" onClick={() => setIsOpen(false)}>
                     <Building2 className="h-5 w-5" />
