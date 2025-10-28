@@ -80,7 +80,7 @@ const ServiceProviderDashboard = () => {
 
     const { data, error } = await supabase
       .from("services")
-      .select("id, title, description, price, contact_number, availability, photo_url, created_at")
+      .select("id, title, description, price, contact_number, availability, photo_url, category_id, created_at")
       .eq("provider_id", user.id)
       .order("created_at", { ascending: false });
 
@@ -243,6 +243,7 @@ const ServiceProviderDashboard = () => {
                 categoryId={formData.category_id}
                 onCategoryChange={(id) => setFormData({ ...formData, category_id: id })}
                 required
+                filterType="services"
               />
 
               <div className="space-y-2">

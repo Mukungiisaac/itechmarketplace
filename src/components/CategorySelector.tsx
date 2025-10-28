@@ -34,7 +34,16 @@ const CategorySelector = ({
       .select("*");
 
     // Filter based on type
-    const serviceCategories = ["Services", "Hostels & Accommodation", "Repair & Maintenance", "Campus Events & Ads"];
+    const serviceCategories = [
+      "Tech & Digital Services",
+      "Academic Support",
+      "Personal Care & Lifestyle",
+      "Transport & Logistics",
+      "Entertainment and Events",
+      "Wellness & Support",
+      "Financial Services",
+      "Creative & Innovation Services"
+    ];
     
     if (filterType === "products") {
       query = query.not("name", "in", `(${serviceCategories.map(c => `"${c}"`).join(",")})`);
