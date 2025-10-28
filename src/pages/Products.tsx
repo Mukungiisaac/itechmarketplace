@@ -76,13 +76,18 @@ const Products = () => {
       const { data, error } = await supabase
         .from("products")
         .select(`
-          *,
-          profiles (
-            full_name,
-            phone_number
-          )
+          id,
+          title,
+          description,
+          price,
+          photo_url,
+          seller_id,
+          category_id,
+          views,
+          profiles:seller_id (full_name, phone_number)
         `)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(100);
 
       if (error) throw error;
 
@@ -109,9 +114,8 @@ const Products = () => {
 
       return results as Product[];
     },
-    refetchInterval: 5000,
-    refetchOnWindowFocus: true,
-    staleTime: 0,
+    staleTime: 1000 * 60 * 2,
+    refetchOnWindowFocus: false,
   });
 
   const extractPrice = (priceStr: string) => {

@@ -39,15 +39,27 @@ const Houses = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("houses")
-        .select("*")
-        .order("created_at", { ascending: false });
+        .select(`
+          id,
+          title,
+          location,
+          house_type,
+          rent,
+          water,
+          wifi,
+          contact_number,
+          photo_url,
+          landlord_id,
+          views
+        `)
+        .order("created_at", { ascending: false })
+        .limit(100);
 
       if (error) throw error;
       return data || [];
     },
-    refetchInterval: 5000,
-    refetchOnWindowFocus: true,
-    staleTime: 0,
+    staleTime: 1000 * 60 * 2,
+    refetchOnWindowFocus: false,
   });
 
   const extractMinPrice = (priceStr: string): number => {

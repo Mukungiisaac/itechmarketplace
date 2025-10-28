@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
+import { usePromotedUsers } from "@/hooks/usePromotedUsers";
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,33 +25,27 @@ const Index = () => {
     maxPrice: null as number | null,
   });
 
+  const { data: promotedUserIds = [], isLoading: promotedLoading } = usePromotedUsers();
+
   const { data: products = [], isLoading: productsLoading } = useQuery({
-    queryKey: ['homepage-products'],
+    queryKey: ['homepage-products', promotedUserIds],
     queryFn: async () => {
-      const { data: promotedUsers, error: rolesError } = await supabase
-        .from("user_roles")
-        .select("user_id")
-        .eq("promoted", true);
-
-      if (rolesError) {
-        console.warn('Failed to load promoted users:', rolesError);
-        return [];
-      }
-
-      const promotedUserIds = promotedUsers?.map((u: any) => u.user_id) || [];
-
-      if (promotedUserIds.length === 0) {
-        return [];
-      }
+      if (promotedUserIds.length === 0) return [];
 
       const { data: productsData, error } = await supabase
         .from("products")
         .select(`
-          *,
+          id,
+          title,
+          price,
+          description,
+          photo_url,
+          seller_id,
           profiles:seller_id (full_name, phone_number)
         `)
         .in("seller_id", promotedUserIds)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(20);
 
       if (error) throw error;
 
@@ -72,34 +67,26 @@ const Index = () => {
   });
 
   const { data: services = [], isLoading: servicesLoading } = useQuery({
-    queryKey: ['homepage-services'],
+    queryKey: ['homepage-services', promotedUserIds],
     queryFn: async () => {
-      const { data: promotedUsers, error: rolesError } = await supabase
-        .from("user_roles")
-        .select("user_id")
-        .eq("promoted", true);
-
-      if (rolesError) {
-        console.warn('Failed to load promoted users:', rolesError);
-        return [];
-      }
-
-      const promotedUserIds = promotedUsers?.map((u: any) => u.user_id) || [];
-
-      if (promotedUserIds.length === 0) {
-        return [];
-      }
+      if (promotedUserIds.length === 0) return [];
 
       const { data: servicesData, error } = await supabase
         .from("services")
         .select(`
-          *,
-          categories (
-            name
-          )
+          id,
+          title,
+          price,
+          description,
+          availability,
+          contact_number,
+          photo_url,
+          provider_id,
+          categories (name)
         `)
         .in("provider_id", promotedUserIds)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(12);
 
       if (error) throw error;
 
@@ -113,29 +100,27 @@ const Index = () => {
   });
 
   const { data: houses = [], isLoading: housesLoading } = useQuery({
-    queryKey: ['homepage-houses'],
+    queryKey: ['homepage-houses', promotedUserIds],
     queryFn: async () => {
-      const { data: promotedUsers, error: rolesError } = await supabase
-        .from("user_roles")
-        .select("user_id")
-        .eq("promoted", true);
-
-      if (rolesError) {
-        console.warn('Failed to load promoted users:', rolesError);
-        return [];
-      }
-
-      const promotedUserIds = promotedUsers?.map((u: any) => u.user_id) || [];
-
-      if (promotedUserIds.length === 0) {
-        return [];
-      }
+      if (promotedUserIds.length === 0) return [];
 
       const { data: housesData, error } = await supabase
         .from("houses")
-        .select("*")
+        .select(`
+          id,
+          title,
+          rent,
+          location,
+          house_type,
+          water,
+          wifi,
+          contact_number,
+          photo_url,
+          landlord_id
+        `)
         .in("landlord_id", promotedUserIds)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(12);
 
       if (error) throw error;
 

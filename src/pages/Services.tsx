@@ -24,19 +24,24 @@ const Services = () => {
       const { data, error } = await supabase
         .from("services")
         .select(`
-          *,
-          categories (
-            name
-          )
+          id,
+          title,
+          description,
+          price,
+          availability,
+          contact_number,
+          photo_url,
+          provider_id,
+          categories (name)
         `)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(100);
 
       if (error) throw error;
       return data || [];
     },
-    refetchInterval: 5000,
-    refetchOnWindowFocus: true,
-    staleTime: 0,
+    staleTime: 1000 * 60 * 2,
+    refetchOnWindowFocus: false,
   });
 
   const extractMinPrice = (priceStr: string): number => {
