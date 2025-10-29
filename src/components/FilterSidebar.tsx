@@ -23,9 +23,10 @@ interface FilterSidebarProps {
     minPrice: number | null;
     maxPrice: number | null;
   }) => void;
+  filterType?: "products" | "services" | "all";
 }
 
-const FilterSidebar = ({ onFilterChange }: FilterSidebarProps) => {
+const FilterSidebar = ({ onFilterChange, filterType = "all" }: FilterSidebarProps) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoryId, setCategoryId] = useState("all");
   const [minPrice, setMinPrice] = useState("");
@@ -33,13 +34,34 @@ const FilterSidebar = ({ onFilterChange }: FilterSidebarProps) => {
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [filterType]);
 
   const fetchCategories = async () => {
-    const { data, error } = await supabase
+    let query = supabase
       .from("categories")
-      .select("id, name")
-      .order("sort_order");
+      .select("id, name");
+
+    // Filter based on type
+    const serviceCategories = [
+      "Tech & Digital Services",
+      "Academic Support",
+      "Personal Care & Lifestyle",
+      "Transport & Logistics",
+      "Entertainment and Events",
+      "Wellness & Support",
+      "Financial Services",
+      "Creative & Innovation Services"
+    ];
+    
+    if (filterType === "products") {
+      query = query.not("name", "in", `(${serviceCategories.map(c => `"${c}"`).join(",")})`);
+    } else if (filterType === "services") {
+      query = query.in("name", serviceCategories);
+    }
+
+    query = query.order("sort_order");
+
+    const { data, error } = await query;
 
     if (!error && data) {
       setCategories(data);

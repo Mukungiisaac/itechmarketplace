@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { Search, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FilterSidebar from "@/components/FilterSidebar";
@@ -9,6 +10,13 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const Services = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,6 +25,7 @@ const Services = () => {
     minPrice: null as number | null,
     maxPrice: null as number | null,
   });
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const { data: services = [], isLoading } = useQuery({
     queryKey: ['services'],
@@ -32,6 +41,7 @@ const Services = () => {
           contact_number,
           photo_url,
           provider_id,
+          category_id,
           categories (name)
         `)
         .order("created_at", { ascending: false })
@@ -61,10 +71,11 @@ const Services = () => {
     const maxPrice = extractMaxPrice(service.price);
     const matchesMinPrice = filters.minPrice === null || maxPrice >= filters.minPrice;
     const matchesMaxPrice = filters.maxPrice === null || minPrice <= filters.maxPrice;
+    const matchesCategory = filters.categoryId === "all" || service.category_id === filters.categoryId;
     const matchesSearch = searchTerm === "" ||
       service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (service.description?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
-    return matchesMinPrice && matchesMaxPrice && matchesSearch;
+    return matchesMinPrice && matchesMaxPrice && matchesCategory && matchesSearch;
   });
 
   return (
@@ -74,19 +85,41 @@ const Services = () => {
       <div className="container px-4 md:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
           <aside className="hidden lg:block">
-            <FilterSidebar onFilterChange={setFilters} />
+            <FilterSidebar onFilterChange={setFilters} filterType="services" />
           </aside>
 
           <main className="space-y-12">
-            <div className="relative max-w-2xl">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search services..."
-                className="pl-10 h-12 text-base"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            <div className="flex gap-3 max-w-2xl">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search services..."
+                  className="pl-10 h-12 text-base"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              
+              {/* Mobile filter button */}
+              <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="icon" className="lg:hidden h-12 w-12">
+                    <SlidersHorizontal className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+                  <SheetHeader>
+                    <SheetTitle>Filters</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6">
+                    <FilterSidebar onFilterChange={(newFilters) => {
+                      setFilters(newFilters);
+                      setIsFilterOpen(false);
+                    }} filterType="services" />
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
 
             <section className="space-y-6 animate-fade-in">

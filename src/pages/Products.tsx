@@ -142,7 +142,7 @@ const Products = () => {
       <div className="container px-4 md:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
           <aside className="hidden lg:block">
-            <FilterSidebar onFilterChange={setFilters} />
+            <FilterSidebar onFilterChange={setFilters} filterType="products" />
           </aside>
 
           <main className="space-y-12">
@@ -173,7 +173,7 @@ const Products = () => {
                     <FilterSidebar onFilterChange={(newFilters) => {
                       setFilters(newFilters);
                       setIsFilterOpen(false);
-                    }} />
+                    }} filterType="products" />
                   </div>
                 </SheetContent>
               </Sheet>
