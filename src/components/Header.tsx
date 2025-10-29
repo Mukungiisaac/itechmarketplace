@@ -65,7 +65,12 @@ const Header = () => {
       "Entertainment and Events",
       "Wellness & Support",
       "Financial Services",
-      "Creative & Innovation Services"
+      "Creative & Innovation Services",
+      "Health & Personal Care",
+      "Transport & Mobility",
+      "Entertainment & Hobbies",
+      "Repair and Maintenance",
+      "Campus Events"
     ];
     
     const { data } = await supabase
@@ -88,7 +93,12 @@ const Header = () => {
       "Entertainment and Events",
       "Wellness & Support",
       "Financial Services",
-      "Creative & Innovation Services"
+      "Creative & Innovation Services",
+      "Health & Personal Care",
+      "Transport & Mobility",
+      "Entertainment & Hobbies",
+      "Repair and Maintenance",
+      "Campus Events"
     ];
     
     const { data } = await supabase

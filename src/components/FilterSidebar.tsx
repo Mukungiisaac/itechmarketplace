@@ -50,7 +50,12 @@ const FilterSidebar = ({ onFilterChange, filterType = "all" }: FilterSidebarProp
       "Entertainment and Events",
       "Wellness & Support",
       "Financial Services",
-      "Creative & Innovation Services"
+      "Creative & Innovation Services",
+      "Health & Personal Care",
+      "Transport & Mobility",
+      "Entertainment & Hobbies",
+      "Repair and Maintenance",
+      "Campus Events"
     ];
     
     if (filterType === "products") {
