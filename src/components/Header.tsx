@@ -27,12 +27,15 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+  const [isServiceCategoriesOpen, setIsServiceCategoriesOpen] = useState(false);
   const [productCategories, setProductCategories] = useState<Category[]>([]);
+  const [serviceCategories, setServiceCategories] = useState<Category[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     checkUserRole();
     fetchProductCategories();
+    fetchServiceCategories();
   }, []);
 
   const checkUserRole = async () => {
@@ -54,14 +57,48 @@ const Header = () => {
   };
 
   const fetchProductCategories = async () => {
+    const serviceCategories = [
+      "Tech & Digital Services",
+      "Academic Support",
+      "Personal Care & Lifestyle",
+      "Transport & Logistics",
+      "Entertainment and Events",
+      "Wellness & Support",
+      "Financial Services",
+      "Creative & Innovation Services"
+    ];
+    
     const { data } = await supabase
       .from("categories")
       .select("id, name, description")
-      .not("name", "in", '("Services","Hostels & Accommodation","Repair & Maintenance","Campus Events & Ads")')
+      .not("name", "in", `(${serviceCategories.map(c => `"${c}"`).join(",")})`)
       .order("sort_order");
     
     if (data) {
       setProductCategories(data);
+    }
+  };
+
+  const fetchServiceCategories = async () => {
+    const serviceCategoryNames = [
+      "Tech & Digital Services",
+      "Academic Support",
+      "Personal Care & Lifestyle",
+      "Transport & Logistics",
+      "Entertainment and Events",
+      "Wellness & Support",
+      "Financial Services",
+      "Creative & Innovation Services"
+    ];
+    
+    const { data } = await supabase
+      .from("categories")
+      .select("id, name, description")
+      .in("name", serviceCategoryNames)
+      .order("sort_order");
+    
+    if (data) {
+      setServiceCategories(data);
     }
   };
 
@@ -128,12 +165,32 @@ const Header = () => {
               Houses
             </Link>
           </Button>
-          <Button variant="ghost" size="sm" asChild className="transition-all duration-300 hover:scale-105">
-            <Link to="/services" className="gap-2 group">
-              <Wrench className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
-              Services
-            </Link>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="transition-all duration-300 hover:scale-105 gap-2 group">
+                <Wrench className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
+                Services
+                <ChevronDown className="h-3 w-3 transition-transform duration-300 group-hover:rotate-180" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 bg-background z-[100]">
+              <DropdownMenuItem asChild>
+                <Link to="/services" className="cursor-pointer">
+                  All Services
+                </Link>
+              </DropdownMenuItem>
+              {serviceCategories.map((category) => (
+                <DropdownMenuItem key={category.id} asChild>
+                  <Link 
+                    to={`/services?category=${category.id}`} 
+                    className="cursor-pointer"
+                  >
+                    {category.name}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button variant="ghost" size="sm" asChild className="transition-all duration-300 hover:scale-105">
             <Link to="/advertise" className="gap-2 group">
               <Megaphone className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
@@ -225,12 +282,29 @@ const Header = () => {
                     Houses
                   </Link>
                 </Button>
-                <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
-                  <Link to="/services" onClick={() => setIsOpen(false)}>
-                    <Wrench className="h-5 w-5" />
-                    Services
-                  </Link>
-                </Button>
+                <Collapsible open={isServiceCategoriesOpen} onOpenChange={setIsServiceCategoriesOpen}>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="lg" className="justify-start gap-3 transition-all duration-300 hover:scale-105 w-full">
+                      <Wrench className="h-5 w-5" />
+                      Services
+                      <ChevronDown className={`h-4 w-4 ml-auto transition-transform duration-300 ${isServiceCategoriesOpen ? 'rotate-180' : ''}`} />
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pl-8 flex flex-col gap-2 mt-2">
+                    <Button variant="ghost" size="sm" asChild className="justify-start transition-all duration-300 hover:scale-105">
+                      <Link to="/services" onClick={() => setIsOpen(false)}>
+                        All Services
+                      </Link>
+                    </Button>
+                    {serviceCategories.map((category) => (
+                      <Button key={category.id} variant="ghost" size="sm" asChild className="justify-start transition-all duration-300 hover:scale-105">
+                        <Link to={`/services?category=${category.id}`} onClick={() => setIsOpen(false)}>
+                          {category.name}
+                        </Link>
+                      </Button>
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
                 <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
                   <Link to="/advertise" onClick={() => setIsOpen(false)}>
                     <Megaphone className="h-5 w-5" />

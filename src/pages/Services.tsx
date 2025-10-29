@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FilterSidebar from "@/components/FilterSidebar";
@@ -19,13 +20,35 @@ import {
 } from "@/components/ui/sheet";
 
 const Services = () => {
+  const [searchParams] = useSearchParams();
+  const categoryFromUrl = searchParams.get("category");
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
-    categoryId: "all",
+    categoryId: categoryFromUrl || "all",
     minPrice: null as number | null,
     maxPrice: null as number | null,
   });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [categoryName, setCategoryName] = useState<string>("");
+
+  useEffect(() => {
+    if (categoryFromUrl) {
+      setFilters(prev => ({ ...prev, categoryId: categoryFromUrl }));
+      fetchCategoryName(categoryFromUrl);
+    }
+  }, [categoryFromUrl]);
+
+  const fetchCategoryName = async (categoryId: string) => {
+    const { data } = await supabase
+      .from("categories")
+      .select("name")
+      .eq("id", categoryId)
+      .single();
+    
+    if (data) {
+      setCategoryName(data.name);
+    }
+  };
 
   const { data: services = [], isLoading } = useQuery({
     queryKey: ['services'],
@@ -124,8 +147,12 @@ const Services = () => {
 
             <section className="space-y-6 animate-fade-in">
               <div>
-                <h2 className="text-3xl font-bold tracking-tight">Available Services</h2>
-                <p className="text-muted-foreground mt-1">Find trusted service providers near campus</p>
+                <h2 className="text-3xl font-bold tracking-tight">
+                  {categoryName ? categoryName : "Available Services"}
+                </h2>
+                <p className="text-muted-foreground mt-1">
+                  {categoryName ? `Browse ${categoryName.toLowerCase()} services` : "Find trusted service providers near campus"}
+                </p>
               </div>
               {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
