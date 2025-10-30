@@ -73,7 +73,9 @@ const Header = () => {
       "Repair and Maintenance",
       "Campus Events",
       "Restaurant",
-      "Other Services"
+      "Other Services",
+      "Deals & Campus Hustles",
+      "Hostels & Accommodation"
     ];
     
     const { data } = await supabase
