@@ -279,7 +279,7 @@ const Header = () => {
                     </Button>
                   </CollapsibleTrigger>
                   <CollapsibleContent className="pl-8 mt-2">
-                    <ScrollArea className="max-h-[300px]">
+                    <ScrollArea className="h-[400px]">
                       <div className="flex flex-col gap-2 pr-4">
                         <Button variant="ghost" size="sm" asChild className="justify-start transition-all duration-300 hover:scale-105">
                           <Link to="/products" onClick={() => setIsOpen(false)}>
@@ -312,7 +312,7 @@ const Header = () => {
                     </Button>
                   </CollapsibleTrigger>
                   <CollapsibleContent className="pl-8 mt-2">
-                    <ScrollArea className="max-h-[300px]">
+                    <ScrollArea className="h-[400px]">
                       <div className="flex flex-col gap-2 pr-4">
                         <Button variant="ghost" size="sm" asChild className="justify-start transition-all duration-300 hover:scale-105">
                           <Link to="/services" onClick={() => setIsOpen(false)}>
