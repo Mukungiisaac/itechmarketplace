@@ -55,7 +55,9 @@ const FilterSidebar = ({ onFilterChange, filterType = "all" }: FilterSidebarProp
       "Transport & Mobility",
       "Entertainment & Hobbies",
       "Repair and Maintenance",
-      "Campus Events"
+      "Campus Events",
+      "Restaurant",
+      "Other Services"
     ];
     
     if (filterType === "products") {

@@ -57,7 +57,7 @@ const Header = () => {
   };
 
   const fetchProductCategories = async () => {
-    const serviceCategories = [
+    const serviceCategoryNames = [
       "Tech & Digital Services",
       "Academic Support",
       "Personal Care & Lifestyle",
@@ -70,13 +70,15 @@ const Header = () => {
       "Transport & Mobility",
       "Entertainment & Hobbies",
       "Repair and Maintenance",
-      "Campus Events"
+      "Campus Events",
+      "Restaurant",
+      "Other Services"
     ];
     
     const { data } = await supabase
       .from("categories")
       .select("id, name, description")
-      .not("name", "in", `(${serviceCategories.map(c => `"${c}"`).join(",")})`)
+      .not("name", "in", `(${serviceCategoryNames.map(c => `"${c}"`).join(",")})`)
       .order("sort_order");
     
     if (data) {
@@ -98,7 +100,9 @@ const Header = () => {
       "Transport & Mobility",
       "Entertainment & Hobbies",
       "Repair and Maintenance",
-      "Campus Events"
+      "Campus Events",
+      "Restaurant",
+      "Other Services"
     ];
     
     const { data } = await supabase
