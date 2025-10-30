@@ -35,6 +35,9 @@ const Services = () => {
     if (categoryFromUrl) {
       setFilters(prev => ({ ...prev, categoryId: categoryFromUrl }));
       fetchCategoryName(categoryFromUrl);
+    } else {
+      setFilters(prev => ({ ...prev, categoryId: "all" }));
+      setCategoryName("");
     }
   }, [categoryFromUrl]);
 

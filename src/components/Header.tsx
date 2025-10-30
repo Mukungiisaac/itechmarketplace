@@ -3,6 +3,7 @@ import { Home, Package, Building2, Megaphone, LogIn, LogOut, LayoutDashboard, Wr
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -275,19 +276,23 @@ const Header = () => {
                       <ChevronDown className={`h-4 w-4 ml-auto transition-transform duration-300 ${isCategoriesOpen ? 'rotate-180' : ''}`} />
                     </Button>
                   </CollapsibleTrigger>
-                  <CollapsibleContent className="pl-8 flex flex-col gap-2 mt-2">
-                    <Button variant="ghost" size="sm" asChild className="justify-start transition-all duration-300 hover:scale-105">
-                      <Link to="/products" onClick={() => setIsOpen(false)}>
-                        All Products
-                      </Link>
-                    </Button>
-                    {productCategories.map((category) => (
-                      <Button key={category.id} variant="ghost" size="sm" asChild className="justify-start transition-all duration-300 hover:scale-105">
-                        <Link to={`/products?category=${category.id}`} onClick={() => setIsOpen(false)}>
-                          {category.name}
-                        </Link>
-                      </Button>
-                    ))}
+                  <CollapsibleContent className="pl-8 mt-2">
+                    <ScrollArea className="max-h-[300px]">
+                      <div className="flex flex-col gap-2 pr-4">
+                        <Button variant="ghost" size="sm" asChild className="justify-start transition-all duration-300 hover:scale-105">
+                          <Link to="/products" onClick={() => setIsOpen(false)}>
+                            All Products
+                          </Link>
+                        </Button>
+                        {productCategories.map((category) => (
+                          <Button key={category.id} variant="ghost" size="sm" asChild className="justify-start transition-all duration-300 hover:scale-105">
+                            <Link to={`/products?category=${category.id}`} onClick={() => setIsOpen(false)}>
+                              {category.name}
+                            </Link>
+                          </Button>
+                        ))}
+                      </div>
+                    </ScrollArea>
                   </CollapsibleContent>
                 </Collapsible>
                 <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
@@ -304,19 +309,23 @@ const Header = () => {
                       <ChevronDown className={`h-4 w-4 ml-auto transition-transform duration-300 ${isServiceCategoriesOpen ? 'rotate-180' : ''}`} />
                     </Button>
                   </CollapsibleTrigger>
-                  <CollapsibleContent className="pl-8 flex flex-col gap-2 mt-2">
-                    <Button variant="ghost" size="sm" asChild className="justify-start transition-all duration-300 hover:scale-105">
-                      <Link to="/services" onClick={() => setIsOpen(false)}>
-                        All Services
-                      </Link>
-                    </Button>
-                    {serviceCategories.map((category) => (
-                      <Button key={category.id} variant="ghost" size="sm" asChild className="justify-start transition-all duration-300 hover:scale-105">
-                        <Link to={`/services?category=${category.id}`} onClick={() => setIsOpen(false)}>
-                          {category.name}
-                        </Link>
-                      </Button>
-                    ))}
+                  <CollapsibleContent className="pl-8 mt-2">
+                    <ScrollArea className="max-h-[300px]">
+                      <div className="flex flex-col gap-2 pr-4">
+                        <Button variant="ghost" size="sm" asChild className="justify-start transition-all duration-300 hover:scale-105">
+                          <Link to="/services" onClick={() => setIsOpen(false)}>
+                            All Services
+                          </Link>
+                        </Button>
+                        {serviceCategories.map((category) => (
+                          <Button key={category.id} variant="ghost" size="sm" asChild className="justify-start transition-all duration-300 hover:scale-105">
+                            <Link to={`/services?category=${category.id}`} onClick={() => setIsOpen(false)}>
+                              {category.name}
+                            </Link>
+                          </Button>
+                        ))}
+                      </div>
+                    </ScrollArea>
                   </CollapsibleContent>
                 </Collapsible>
                 <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
