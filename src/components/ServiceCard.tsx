@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -52,10 +53,8 @@ const ServiceCard = ({
     localStorage.setItem(likeKey, String(newLikedState));
     try {
       const action = newLikedState ? 'like' : 'unlike';
-      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/engagement`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ table: 'services', id, action })
+      await supabase.functions.invoke('engagement', {
+        body: { table: 'services', id, action }
       });
     } catch (error) {
       console.error('Error updating likes:', error);

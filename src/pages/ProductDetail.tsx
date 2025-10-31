@@ -23,10 +23,8 @@ const ProductDetail = () => {
 
   const incrementViews = async () => {
     try {
-      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/engagement`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ table: 'products', id: product.id, action: 'view' })
+      await supabase.functions.invoke('engagement', {
+        body: { table: 'products', id: product.id, action: 'view' }
       });
     } catch (error) {
       console.error("Error incrementing views:", error);
@@ -36,10 +34,8 @@ const ProductDetail = () => {
   const handleLike = async () => {
     try {
       const action = isLiked ? 'unlike' : 'like'
-      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/engagement`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ table: 'products', id: product.id, action })
+      await supabase.functions.invoke('engagement', {
+        body: { table: 'products', id: product.id, action }
       });
       setIsLiked(!isLiked);
       localStorage.setItem(`like_product_detail_${product.id}`, String(!isLiked));
