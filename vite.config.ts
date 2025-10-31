@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.png', 'icon-192.png', 'icon-512.png'],
       manifest: {
-        name: 'iTechMarketplace',
+        name: 'iTech',
         short_name: 'iTech',
         description: 'Browse quality houses and marketplace items. Discover homes with WiFi, water, and great amenities at affordable prices.',
         theme_color: '#ffffff',
