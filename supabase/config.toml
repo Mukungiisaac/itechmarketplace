@@ -1,1 +1,4 @@
 project_id = "xhbzufpnwfjkuxtqcrrj"
+
+[functions.engagement]
+verify_jwt = false
