@@ -112,6 +112,7 @@ const ServiceDetail = () => {
                 src={service.photoUrl || "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&q=80"}
                 alt={service.title}
                 className="w-full h-auto object-contain"
+                loading="lazy"
               />
             </div>
           </div>

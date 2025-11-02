@@ -108,6 +108,7 @@ const HouseDetail = () => {
                 src={house.image}
                 alt={house.name}
                 className="w-full h-auto object-contain"
+                loading="lazy"
               />
             </div>
           </div>

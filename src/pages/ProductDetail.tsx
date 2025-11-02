@@ -107,6 +107,7 @@ const ProductDetail = () => {
                 src={product.image}
                 alt={product.name}
                 className="w-full h-auto object-contain"
+                loading="lazy"
               />
             </div>
           </div>

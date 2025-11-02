@@ -82,6 +82,7 @@ const HouseCard = ({
           src={image}
           alt={name}
           className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          loading="lazy"
           onLoad={() => setImageLoaded(true)}
         />
       </div>
