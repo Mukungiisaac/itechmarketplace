@@ -21,6 +21,7 @@ import ServiceProviderDashboard from "./pages/ServiceProviderDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import SetupAdmin from "./pages/SetupAdmin";
 import Install from "./pages/Install";
+import OptimizeImages from "./pages/OptimizeImages";
 
 import NotFound from "./pages/NotFound";
 import ContactButton from "./components/ContactButton";
@@ -59,6 +60,7 @@ const App = () => (
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/setup-admin" element={<SetupAdmin />} />
           <Route path="/install" element={<Install />} />
+          <Route path="/optimize-images" element={<OptimizeImages />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
