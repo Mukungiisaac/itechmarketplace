@@ -12,6 +12,7 @@ import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import CategorySelector from "@/components/CategorySelector";
 import { Pencil, Trash2, User, LogOut, Upload } from "lucide-react";
+import { optimizeImage, blobToBase64, getImageSizeCategory } from "@/utils/imageOptimization";
 
 interface Product {
   id: string;
@@ -426,14 +427,18 @@ const SellerDashboard = () => {
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              setFormData({ ...formData, photo_url: reader.result as string });
-                            };
-                            reader.readAsDataURL(file);
+                            try {
+                              toast({ title: "Optimizing image...", description: "Converting to WebP and compressing" });
+                              const optimized = await optimizeImage(file, getImageSizeCategory('product'));
+                              const base64 = await blobToBase64(optimized);
+                              setFormData({ ...formData, photo_url: base64 });
+                              toast({ title: "Image optimized!", description: "Ready to upload", variant: "success" });
+                            } catch (error) {
+                              toast({ title: "Error", description: "Failed to optimize image", variant: "destructive" });
+                            }
                           }
                         }}
                       />
