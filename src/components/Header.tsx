@@ -25,6 +25,7 @@ const Header = () => {
   const [isSeller, setIsSeller] = useState(false);
   const [isLandlord, setIsLandlord] = useState(false);
   const [isServiceProvider, setIsServiceProvider] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
@@ -52,8 +53,13 @@ const Header = () => {
       setIsSeller(roles?.role === "seller");
       setIsLandlord(roles?.role === "landlord");
       setIsServiceProvider(roles?.role === "service_provider");
+      setIsAdmin(roles?.role === "admin");
     } else {
       setIsLoggedIn(false);
+      setIsSeller(false);
+      setIsLandlord(false);
+      setIsServiceProvider(false);
+      setIsAdmin(false);
     }
   };
 
@@ -238,6 +244,14 @@ const Header = () => {
               </Link>
             </Button>
           )}
+          {isAdmin && (
+            <Button variant="ghost" size="sm" asChild className="transition-all duration-300 hover:scale-105">
+              <Link to="/admin-dashboard" className="gap-2 group">
+                <LayoutDashboard className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
+                Admin
+              </Link>
+            </Button>
+          )}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -357,6 +371,14 @@ const Header = () => {
                     <Link to="/service-provider-dashboard" onClick={() => setIsOpen(false)}>
                       <LayoutDashboard className="h-5 w-5" />
                       Service Provider Dashboard
+                    </Link>
+                  </Button>
+                )}
+                {isAdmin && (
+                  <Button variant="ghost" size="lg" asChild className="justify-start gap-3 transition-all duration-300 hover:scale-105">
+                    <Link to="/admin-dashboard" onClick={() => setIsOpen(false)}>
+                      <LayoutDashboard className="h-5 w-5" />
+                      Admin Dashboard
                     </Link>
                   </Button>
                 )}
