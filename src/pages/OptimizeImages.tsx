@@ -4,33 +4,85 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Image as ImageIcon } from "lucide-react";
+import { optimizeImage, blobToBase64, getImageSizeCategory } from "@/utils/imageOptimization";
 
 const OptimizeImages = () => {
   const [isOptimizing, setIsOptimizing] = useState<string | null>(null);
   const [results, setResults] = useState<Record<string, any>>({});
   const { toast } = useToast();
 
-  const optimizeTable = async (table: string) => {
+  const optimizeTable = async (table: 'products' | 'services' | 'houses') => {
     setIsOptimizing(table);
     try {
-      const { data, error } = await supabase.functions.invoke('optimize-images', {
-        body: { table, batchSize: 10 }
-      });
+      // Fetch images that are NOT already WebP
+      const { data: items, error: fetchError } = await supabase
+        .from(table)
+        .select('id, photo_url')
+        .not('photo_url', 'is', null)
+        .not('photo_url', 'like', 'data:image/webp%')
+        .limit(10);
 
-      if (error) throw error;
+      if (fetchError) throw fetchError;
 
-      setResults(prev => ({ ...prev, [table]: data }));
+      if (!items || items.length === 0) {
+        toast({
+          title: "All Done!",
+          description: `All images in ${table} are already optimized`,
+        });
+        setResults(prev => ({ ...prev, [table]: { processed: 0, total: 0 } }));
+        return;
+      }
+
+      let processed = 0;
+      const errors: string[] = [];
+
+      for (const item of items) {
+        try {
+          if (!item.photo_url || !item.photo_url.startsWith('data:image/')) {
+            continue;
+          }
+
+          // Convert base64 to blob
+          const base64Data = item.photo_url.split(',')[1];
+          const mimeType = item.photo_url.match(/data:([^;]+);/)?.[1] || 'image/png';
+          const binaryString = atob(base64Data);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          const blob = new Blob([bytes], { type: mimeType });
+          const file = new File([blob], 'image', { type: mimeType });
+
+          // Optimize using our utility
+          const imageType = table === 'houses' ? 'house' : table === 'products' ? 'product' : 'service';
+          const optimizedBlob = await optimizeImage(file, getImageSizeCategory(imageType));
+          const optimizedBase64 = await blobToBase64(optimizedBlob);
+
+          // Update database
+          const { error: updateError } = await supabase
+            .from(table)
+            .update({ photo_url: optimizedBase64 })
+            .eq('id', item.id);
+
+          if (updateError) throw updateError;
+          processed++;
+        } catch (err: any) {
+          errors.push(`Error on ${item.id}: ${err?.message || err}`);
+        }
+      }
+
+      setResults(prev => ({ ...prev, [table]: { processed, total: items.length, errors } }));
       
       toast({
         title: "Optimization Complete",
-        description: `Processed ${data.processed} images from ${table}`,
+        description: `Processed ${processed}/${items.length} images from ${table}`,
       });
 
-      // If there are more to process, ask if they want to continue
-      if (data.remaining > 0) {
+      if (processed < items.length) {
         toast({
-          title: "More Images Available",
-          description: `${data.remaining} more images can be optimized. Click again to continue.`,
+          title: "Some Images Failed",
+          description: `${items.length - processed} images could not be optimized`,
+          variant: "destructive",
         });
       }
     } catch (error: any) {
@@ -54,7 +106,7 @@ const OptimizeImages = () => {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        {['products', 'services', 'houses'].map((table) => (
+        {(['products', 'services', 'houses'] as const).map((table) => (
           <Card key={table}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 capitalize">
@@ -82,8 +134,8 @@ const OptimizeImages = () => {
               </Button>
               {results[table] && (
                 <div className="mt-4 text-sm text-muted-foreground">
-                  <p>✓ Processed: {results[table].processed}</p>
-                  {results[table].errors && (
+                  <p>✓ Processed: {results[table].processed}/{results[table].total}</p>
+                  {results[table].errors && results[table].errors.length > 0 && (
                     <p className="text-destructive">⚠ Errors: {results[table].errors.length}</p>
                   )}
                 </div>
